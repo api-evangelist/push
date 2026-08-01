@@ -1,7 +1,17 @@
 aid: push
 name: Push
-description: Push is a company surfaced as a portfolio company of 500-global and added to the API Evangelist
-  network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Push (PUSHTech, now part of Cendyn) is a CRM, marketing automation, sales, and
+  support platform focused on the hospitality, retail, ecommerce, and marketplace
+  sectors, with deep specialization in hotel guest-journey automation used by more
+  than 1,500 hotels. The platform unifies customer databases and orchestrates
+  pre-stay, during-stay, and post-stay guest communications across email, SMS, and
+  in-app / web push notification channels. Push exposes a token-authenticated REST
+  API (Cendyn CRM API at api.eu.cendyncrm.com) for account, apps, campaign, delivery,
+  contact, and activity data, an HMAC-signed webhooks surface for activity, delivery,
+  and contact events, and a first-party JavaScript Web SDK for browser tracking and
+  web push. Originally added to the API Evangelist network as a 500 Global portfolio
+  lead, this profile has been enriched from the public developer portal.
 url: https://raw.githubusercontent.com/api-evangelist/push/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -9,17 +19,86 @@ x-backed-by:
 - 500-global
 x-tier: stub
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-20'
+image: https://pushtech.com/favicon.ico
 tags:
 - Company
-apis: []
+- CRM
+- Marketing Automation
+- Hospitality
+- Hotels
+- Guest Experience
+- Email
+- SMS
+- Push Notifications
+- Webhooks
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- name: Cendyn CRM (PUSHTech) REST API
+  description: >-
+    Token-authenticated REST API to interact with the Cendyn CRM / PUSHTech platform:
+    query and manage account data, apps, campaigns, deliveries, contacts, and activities,
+    and receive HMAC-signed webhook events for activities, deliveries, and contacts.
+  humanURL: http://developers.pushtech.com/api
+  baseURL: https://api.eu.cendyncrm.com
+  properties:
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
 common:
 - type: Website
   url: https://pushtech.com
+- type: DeveloperPortal
+  url: http://developers.pushtech.com
+- type: Documentation
+  url: http://developers.pushtech.com/api
+- type: APIReference
+  url: http://developers.pushtech.com/api/reference
+- type: GettingStarted
+  url: http://developers.pushtech.com/api/authentication
+- type: Support
+  url: http://help.pushtech.com
+- type: Blog
+  url: http://blog.pushtech.com
+- type: TermsOfService
+  url: https://pushtech.com/terms
+- type: PrivacyPolicy
+  url: https://pushtech.com/privacy_policy
+- type: Authentication
+  url: authentication/push-authentication.yml
+- type: Webhooks
+  url: asyncapi/push-webhooks.yml
+- type: Packages
+  url: packages/push-packages.yml
+- type: SDKs
+  url: packages/push-packages.yml
+- type: Conventions
+  url: conventions/push-conventions.yml
+- type: DomainSecurity
+  url: security/push-domain-security.yml
+x-enrichment:
+  date: '2026-07-20'
+  status: enriched
+  artifacts_added: 5
+  pass: local-v1

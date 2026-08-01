@@ -1,0 +1,39 @@
+generated: '2026-07-20'
+method: searched
+source:
+- http://developers.pushtech.com/api/authentication
+- http://developers.pushtech.com/api/webhooks
+api: Cendyn CRM (PUSHTech) REST API
+base_url: https://api.eu.cendyncrm.com
+auth:
+  style: token-in-header
+  header: Authorization
+  format: 'Token token={{secret}}'
+  contexts:
+  - account
+  - apps
+  cross_ref: authentication/push-authentication.yml
+webhooks:
+  signing: HMAC-SHA256 in Authorization header
+  auth_parameters:
+  - timestamp
+  - token
+  - account_id
+  retries:
+    window: 4 hours
+    schedule: progressive interval
+    exceptions:
+    - delivery events not retried
+  cross_ref: asyncapi/push-webhooks.yml
+idempotency:
+  documented: false
+pagination:
+  documented: false
+rate_limiting:
+  documented: false
+error_envelope:
+  documented: false
+notes: >-
+  Cross-cutting semantics derived from the published authentication and webhooks
+  documentation. Idempotency, pagination, rate-limit signaling, and a formal error
+  envelope are not documented in the public developer portal.

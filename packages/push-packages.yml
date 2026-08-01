@@ -1,0 +1,21 @@
+generated: '2026-07-20'
+method: searched
+source: http://developers.pushtech.com/websdk
+api: Cendyn CRM (PUSHTech)
+packages:
+- name: PUSHTECH Web SDK
+  official: true
+  language: JavaScript
+  distribution: cdn
+  loader: https://assets-cdn.pushtech.com/sdk/web/2.0/PUSHTECHWebSDK.2.9.0.min.js
+  version: 2.9.0
+  service_worker: pushtech-sw.js
+  description: >-
+    First-party JavaScript library that integrates Cendyn CRM (PUSHTech) into web
+    applications: initialize user sessions, track metrics (geolocation, demographics,
+    social login, e-commerce events), manage web push notifications via a service
+    worker, and transmit collected metrics with sendMetrics().
+  registry: null
+notes: >-
+  Loaded via a standard <script> tag from the vendor CDN; no npm/PyPI/Maven package
+  is published in the documentation.

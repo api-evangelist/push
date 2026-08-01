@@ -1,0 +1,27 @@
+generated: '2026-07-20'
+method: searched
+source: http://developers.pushtech.com/api/authentication
+api: Cendyn CRM (PUSHTech) REST API
+base_url: https://api.eu.cendyncrm.com
+schemes:
+- id: token
+  type: http
+  scheme: token
+  in: header
+  header_name: Authorization
+  format: 'Token token={{secret}}'
+  description: >-
+    Token-based authentication. The account secret (or master secret) is passed
+    in the Authorization header after the literal string "Token token=".
+    Example: `Authorization: Token token=dGVzdEBleGFtcGxlLmNvbTpsZXRtZWlu`.
+  variants:
+  - name: account
+    credential: account_secret / account_master_secret
+    description: Account-level authentication for account-scoped resources.
+  - name: apps
+    credential: app_secret
+    description: App-level authentication for app-scoped resources.
+oauth2: false
+notes: >-
+  No OAuth2 flow, token URL, or scopes are documented. Two authentication contexts
+  are supported (Account and Apps), both using the same Authorization header shape.

@@ -1,0 +1,62 @@
+generated: '2026-07-20'
+method: searched
+source: http://developers.pushtech.com/api/webhooks
+type: Webhooks
+api: Cendyn CRM (PUSHTech) REST API
+delivery: HTTP POST callback to subscriber-configured URLs
+subscription: Configure callback URLs in the Webhooks section of the account manager.
+security:
+  auth_parameters:
+  - timestamp
+  - token
+  - account_id
+  signature:
+    header: Authorization
+    algorithm: HMAC-SHA256
+    description: Each webhook includes an Authorization header carrying an HMAC-SHA256 signature for verification.
+retries:
+  window: 4 hours
+  schedule: progressive interval
+  exceptions:
+  - Delivery events are not retried.
+event_groups:
+- id: activities
+  description: Contact interactions and behaviors.
+  events:
+  - event
+  - update
+  - custom
+  - open_app
+  - uninstall_app
+  - subscribe_push
+  - unsubscribe_push
+  - add_cart
+  - remove_cart
+  - product_view
+  - product_refund
+  - purchase_failed
+  - gps_location
+  - contact_status
+- id: deliveries
+  description: Message delivery status across SMS, push, and email channels.
+  events:
+  - queued
+  - sent
+  - delivered
+  - opened
+  - clicked
+  - rejected
+  - failed
+  - bounced
+  - unsubscribed
+- id: contacts
+  description: Contact lifecycle changes.
+  events:
+  - create
+  - channel_subscription
+  - update
+  - destroy
+- id: bulk_contacts
+  description: Notification when a batch of contacts is imported, with success/failure counts.
+- id: incoming_sms
+  description: Received text messages, with sender information and timestamps.

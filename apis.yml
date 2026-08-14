@@ -1,43 +1,48 @@
 aid: push
 name: Push
 description: >-
-  Push (PUSHTech, now part of Cendyn) is a CRM, marketing automation, sales, and
-  support platform focused on the hospitality, retail, ecommerce, and marketplace
-  sectors, with deep specialization in hotel guest-journey automation used by more
-  than 1,500 hotels. The platform unifies customer databases and orchestrates
-  pre-stay, during-stay, and post-stay guest communications across email, SMS, and
-  in-app / web push notification channels. Push exposes a token-authenticated REST
-  API (Cendyn CRM API at api.eu.cendyncrm.com) for account, apps, campaign, delivery,
-  contact, and activity data, an HMAC-signed webhooks surface for activity, delivery,
-  and contact events, and a first-party JavaScript Web SDK for browser tracking and
-  web push. Originally added to the API Evangelist network as a 500 Global portfolio
-  lead, this profile has been enriched from the public developer portal.
+  Push (PUSHTech, now operating as Cendyn CRM after its acquisition by Cendyn) is a CRM and
+  customer data platform specialised in hospitality — the guest journey for hotels — with
+  additional use in retail, ecommerce and marketplace. The platform unifies the guest database
+  and orchestrates pre-stay, during-stay and post-stay communication across email, SMS and
+  web/app push. Its token-authenticated REST API exposes 67 operations across 15 resources
+  (contacts and contact custom fields, companies, products, purchases, coupon lists, hotel data,
+  audience lists, campaigns, deliveries, account balance and a bulk sync-data ingest) from two
+  independent data centers, api.eu.cendyncrm.com and api.us.cendyncrm.com. An HMAC-signed webhook
+  surface publishes five event groups — activities, deliveries, contacts, bulk contacts and
+  incoming SMS — and a first-party JavaScript Web SDK handles browser tracking and web push. The
+  developer portal moved from developers.pushtech.com to developers.cendyncrm.com without a
+  redirect; the old hostnames no longer resolve. Cendyn CRM publishes no OpenAPI, no AsyncAPI, no
+  MCP server, no agent card and no /.well-known/ documents; the machine-readable artifacts in
+  this repo are derived by API Evangelist from the provider's own published HTML reference.
 url: https://raw.githubusercontent.com/api-evangelist/push/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - 500-global
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: enriched
+x-tier-reason: full-rest-surface-derived-from-published-reference
 accessModel:
   pricing: unknown
-  onboarding: self-serve
+  onboarding: request
   trial: false
   try_now: false
   public: false
-  label: Self-serve signup
-  confidence: medium
+  label: Sales-gated
+  confidence: high
   source:
-  - authentication
-  generated: '2026-07-22'
-  method: derived
+  - plans/push-plans-pricing.yml
+  - authentication/push-authentication.yml
+  generated: '2026-08-13'
+  method: searched
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-20'
+modified: '2026-08-13'
 image: https://pushtech.com/favicon.ico
 tags:
 - Company
 - CRM
+- Customer Data Platform
 - Marketing Automation
 - Hospitality
 - Hotels
@@ -46,6 +51,7 @@ tags:
 - SMS
 - Push Notifications
 - Webhooks
+- Segmentation
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -54,51 +60,138 @@ maintainers:
 apis:
 - name: Cendyn CRM (PUSHTech) REST API
   description: >-
-    Token-authenticated REST API to interact with the Cendyn CRM / PUSHTech platform:
-    query and manage account data, apps, campaigns, deliveries, contacts, and activities,
-    and receive HMAC-signed webhook events for activities, deliveries, and contacts.
-  humanURL: http://developers.pushtech.com/api
+    Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP
+    platform. 67 operations across 15 resources: read the account credit balance, manage contacts
+    and their custom fields, companies, products, purchases, coupon lists, hotel data and audience
+    lists, read campaigns and preview a campaign message for one contact, send email, SMS and push
+    deliveries and track their status, and bulk-ingest contacts and purchases through Sync Data.
+    HMAC-signed webhooks publish activity, delivery, contact, bulk-contact and inbound-SMS events.
+  humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
   properties:
-  - type: Authentication
-    url: authentication/push-authentication.yml
+  - type: OpenAPI
+    url: openapi/push-cendyn-crm-openapi.yml
+  - type: Overlay
+    url: overlays/push-cendyn-crm-overlay.yaml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
   - type: Webhooks
     url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
   - type: Conventions
     url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  x-regions:
+  - {region: EU, baseURL: 'https://api.eu.cendyncrm.com'}
+  - {region: US, baseURL: 'https://api.us.cendyncrm.com'}
+  x-region-note: >-
+    An account lives in exactly one data center. The two base URLs are not interchangeable —
+    calling the wrong one returns 401 with the same body as an invalid token.
 common:
 - type: Website
   url: https://pushtech.com
 - type: DeveloperPortal
-  url: http://developers.pushtech.com
+  url: https://developers.cendyncrm.com
 - type: Documentation
-  url: http://developers.pushtech.com/api
+  url: https://developers.cendyncrm.com/api
 - type: APIReference
-  url: http://developers.pushtech.com/api/reference
+  url: https://developers.cendyncrm.com/api/reference
 - type: GettingStarted
-  url: http://developers.pushtech.com/api/authentication
+  url: https://developers.cendyncrm.com/api/authentication
 - type: Support
-  url: http://help.pushtech.com
+  url: https://pushtech.com/contact
 - type: Blog
-  url: http://blog.pushtech.com
+  url: https://www.cendyn.com/resources/
+- type: GitHubOrganization
+  url: https://github.com/pushtech
+- type: Login
+  url: https://www.pushtech.com/users/sign_in
 - type: TermsOfService
   url: https://pushtech.com/terms
 - type: PrivacyPolicy
   url: https://pushtech.com/privacy_policy
-- type: Authentication
-  url: authentication/push-authentication.yml
+- type: OpenAPI
+  url: openapi/push-cendyn-crm-openapi.yml
+- type: Overlay
+  url: overlays/push-cendyn-crm-overlay.yaml
+- type: AsyncAPI
+  url: asyncapi/push-webhooks-asyncapi.yml
 - type: Webhooks
   url: asyncapi/push-webhooks.yml
+- type: Authentication
+  url: authentication/push-authentication.yml
+- type: Conventions
+  url: conventions/push-conventions.yml
+- type: ErrorCatalog
+  url: errors/push-problem-types.yml
+- type: DataModel
+  url: data-model/push-data-model.yml
+- type: Lifecycle
+  url: lifecycle/push-lifecycle.yml
+- type: Conformance
+  url: conformance/push-conformance.yml
 - type: Packages
   url: packages/push-packages.yml
 - type: SDKs
   url: packages/push-packages.yml
-- type: Conventions
-  url: conventions/push-conventions.yml
+- type: Plans
+  url: plans/push-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/push-rate-limits.yml
+- type: AgenticAccess
+  url: agentic-access/push-agentic-access.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/push-llms.txt
+- type: Arazzo
+  name: Onboard a guest and send a welcome message
+  url: arazzo/push-onboard-and-welcome-guest.yml
+- type: Arazzo
+  name: Load a product catalog and attach guest purchase history
+  url: arazzo/push-load-catalog-and-purchase-history.yml
 - type: DomainSecurity
   url: security/push-domain-security.yml
+x-pointers-deliberately-absent:
+  note: >-
+    Recorded so a later pass does not "fix" these by adding a pointer. Each of the following was
+    probed on 2026-08-13 and MISSED; the artifact documenting the absence exists, but no
+    common[].type pointer is emitted, because the pointer would assert that the PROVIDER serves
+    that surface.
+  absent:
+  - {type: WellKnown, reason: 'Every /.well-known/ path 404s on both API hosts and returns an HTML soft-404 shell on the portal host.', artifact: well-known/push-well-known.yml}
+  - {type: SecurityTxt, reason: 'No security.txt served on any host.', artifact: well-known/push-well-known.yml}
+  - {type: AgentCard, reason: '/.well-known/agent-card.json and /.well-known/agent.json 404 on both API hosts; the portal and marketing hosts answer 200 with HTML, which is not a card. No a2a/ artifact written.'}
+  - {type: MCPServer, reason: 'No MCP server exists. mcp/push-mcp.yml carries deployment.mode = none and a CANDIDATE tool list derived by API Evangelist. Emitting MCPServer would credit an agent surface nobody ships.', artifact: mcp/push-mcp.yml}
+  - {type: Idempotency, reason: 'No idempotency key, header or retry contract on any of the 67 operations.', artifact: conventions/push-conventions.yml}
+  - {type: StatusPage, reason: 'No status page. status.cendyncrm.com does not resolve; status.cendyn.com 301s to a maintenance holding page.', artifact: lifecycle/push-lifecycle.yml}
+  - {type: Deprecation, reason: 'No deprecation policy, no Sunset/Deprecation header support, no deprecated operations.', artifact: lifecycle/push-lifecycle.yml}
+  - {type: Security, reason: 'No vulnerability disclosure policy, security.txt, bug bounty or security page found on any readable host.'}
+  - {type: TrustCenter, reason: 'No trust centre found. trust.cendyn.com 301s to a maintenance holding page.'}
+  - {type: Compliance, reason: 'No SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP claim published on any readable host. www.cendyn.com is behind a Cloudflare bot challenge and could not be read.'}
+  - {type: ChangeLog, reason: 'No dated changelog or release notes anywhere on the developer portal.'}
+  - {type: Pricing, reason: 'No pricing page. Sales-gated: Request Demo / Contact only.', artifact: plans/push-plans-pricing.yml}
+  - {type: Roadmap, reason: 'No public roadmap.'}
+  - {type: Postman, reason: 'No first-party Postman collection or workspace found.'}
+  - {type: CLI, reason: 'No first-party CLI.'}
+  - {type: Sandbox, reason: 'No sandbox, test mode, test credentials or magic test values documented.'}
+  - {type: OAuthScopes, reason: 'No OAuth. Static account token only, with no scope vocabulary.'}
 x-enrichment:
-  date: '2026-07-20'
+  date: '2026-08-13'
   status: enriched
-  artifacts_added: 5
+  artifacts_added: 20
   pass: local-v1

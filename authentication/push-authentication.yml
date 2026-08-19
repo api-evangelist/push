@@ -1,27 +1,78 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: http://developers.pushtech.com/api/authentication
+source: https://developers.cendyncrm.com/api/authentication
+superseded_source: http://developers.pushtech.com/api/authentication
+superseded_note: >-
+  The host this artifact was originally read from, developers.pushtech.com, no longer resolves
+  (NXDOMAIN as of 2026-08-13). The developer portal moved to developers.cendyncrm.com following
+  the PUSHTech to Cendyn CRM rebrand; the API host's own 404 body points there.
 api: Cendyn CRM (PUSHTech) REST API
-base_url: https://api.eu.cendyncrm.com
+base_urls:
+- {url: 'https://api.eu.cendyncrm.com', region: EU}
+- {url: 'https://api.us.cendyncrm.com', region: US}
+summary:
+  types: [apiKey]
+  api_key_in: [header]
+  oauth2_flows: []
+  openid_connect: false
+  mutual_tls: false
 schemes:
-- id: token
-  type: http
-  scheme: token
+- id: accountToken
+  type: apiKey
   in: header
   header_name: Authorization
-  format: 'Token token={{secret}}'
+  format: 'Token token={{account_secret}}'
+  sources:
+  - https://developers.cendyncrm.com/api/authentication
+  - openapi/push-cendyn-crm-openapi.yml
   description: >-
-    Token-based authentication. The account secret (or master secret) is passed
-    in the Authorization header after the literal string "Token token=".
-    Example: `Authorization: Token token=dGVzdEBleGFtcGxlLmNvbTpsZXRtZWlu`.
+    Token authentication. The account secret (or account master secret) is passed in the
+    Authorization header after the literal string "Token token=". The docs' worked example uses
+    the base64-looking string dGVzdEBleGFtcGxlLmNvbTpsZXRtZWlu, which decodes to
+    "test@example.com:letmein" — a documentation placeholder, not a live credential.
   variants:
   - name: account
-    credential: account_secret / account_master_secret
-    description: Account-level authentication for account-scoped resources.
+    credential: account_secret
+    header: 'Authorization: Token token={{account_secret}}'
+    description: Account-level authentication for account-scoped resources (the default on all 67 documented operations).
+  - name: account-master
+    credential: account_master_secret
+    header: 'Authorization: Token token={{account_master_secret}}'
+    description: >-
+      Elevated account credential. The reference shows it on the Sync Data resource and on the
+      delivery-send examples; the docs do not state which operations require it, so an integrator
+      must read each operation's Headers block.
   - name: apps
     credential: app_secret
-    description: App-level authentication for app-scoped resources.
+    description: >-
+      App-level authentication. Each app registered in the account has its own secret. Used by
+      the Web SDK (new PUSHTechSDK(app_id, app_secret, user_id)) rather than by the REST API
+      operations documented in the reference.
 oauth2: false
+scopes:
+  published: false
+  note: >-
+    No OAuth2 flow, token endpoint, refresh contract, scope vocabulary or permission model is
+    published. Authorization is all-or-nothing on the account secret, with the master secret as
+    the only privilege distinction. scopes/ is deliberately not emitted for this provider.
+credential_management:
+  rotation_policy: not documented
+  expiry: not documented
+  self_serve_issuance: >-
+    Account and app secrets are read from the Cendyn CRM manager UI (apps section, View App
+    details). No API exists to mint, rotate or revoke a credential.
+observed:
+  method: probed
+  date: '2026-08-13'
+  url: https://api.eu.cendyncrm.com/v2/account/000000000000000000000000/contact
+  http_status: 401
+  body: '{"error":"authorization failure for account: 000000000000000000000000"}'
+  www_authenticate: absent
+  note: >-
+    A missing or invalid token returns 401 with the flat {"error": ...} envelope and NO
+    WWW-Authenticate challenge header, so the auth scheme is not machine-discoverable from a
+    failed request.
 notes: >-
-  No OAuth2 flow, token URL, or scopes are documented. Two authentication contexts
-  are supported (Account and Apps), both using the same Authorization header shape.
+  Single-scheme, header-borne static token. Two credential tiers (account secret, account master
+  secret) plus a separate per-app secret used by the Web SDK. No OAuth2, no OIDC, no mTLS, no
+  scopes, and no published rotation or expiry policy.

@@ -1,0 +1,464 @@
+asyncapi: 3.0.0
+info:
+  title: Cendyn CRM (PUSHTech) Webhooks
+  version: '1.0.0'
+  description: >-
+    Event surface of the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. The
+    platform makes an HTTP POST to subscriber-configured callback URLs when activities, message
+    deliveries, contact lifecycle changes, bulk-import completions or inbound SMS occur.
+
+
+    DERIVED by API Evangelist from the provider's published webhook reference at
+    https://developers.cendyncrm.com/api/webhooks. Cendyn CRM does NOT publish an AsyncAPI
+    document. Every channel, message, field and example below is copied from that reference;
+    nothing was invented. Field types are marked only where the reference states them.
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  externalDocs:
+    description: Cendyn CRM webhooks reference
+    url: https://developers.cendyncrm.com/api/webhooks
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/webhooks
+    provider_published_asyncapi: false
+    note: >-
+      NOT published by Cendyn. Derived from the provider's public HTML webhook reference; verify
+      against the live docs before production use.
+defaultContentType: application/json
+servers:
+  subscriber:
+    host: '{subscriberHost}'
+    protocol: https
+    description: >-
+      The subscriber's own callback endpoint. Cendyn CRM is the publisher and the subscriber is
+      the server. Callback URLs are registered by hand in the Webhooks section of the API area of
+      the Cendyn CRM account manager — there is no subscription API.
+    variables:
+      subscriberHost:
+        description: Host of the callback URL you registered in the account manager.
+        default: example.com
+channels:
+  activities:
+    address: '/'
+    title: Activity events
+    description: Contact interactions and behaviours, emitted from the API, an SDK or a campaign.
+    servers: [$ref: '#/servers/subscriber']
+    messages:
+      activity:
+        $ref: '#/components/messages/Activity'
+  deliveries:
+    address: '/'
+    title: Delivery events
+    description: Message delivery status across the SMS, push and email channels. Never retried on subscriber failure.
+    servers: [$ref: '#/servers/subscriber']
+    messages:
+      delivery:
+        $ref: '#/components/messages/Delivery'
+  contacts:
+    address: '/'
+    title: Contact lifecycle events
+    description: Contact create, channel_subscription, update and destroy.
+    servers: [$ref: '#/servers/subscriber']
+    messages:
+      contact:
+        $ref: '#/components/messages/ContactEvent'
+  bulkContacts:
+    address: '/'
+    title: Bulk contact import result
+    description: Asynchronous completion notification for a batch contact import.
+    servers: [$ref: '#/servers/subscriber']
+    messages:
+      bulkContacts:
+        $ref: '#/components/messages/BulkContacts'
+  incomingSms:
+    address: '/'
+    title: Incoming SMS
+    description: Inbound text messages received on an account number.
+    servers: [$ref: '#/servers/subscriber']
+    messages:
+      incomingSms:
+        $ref: '#/components/messages/IncomingSms'
+operations:
+  receiveActivity:
+    action: receive
+    channel:
+      $ref: '#/channels/activities'
+    summary: Receive a contact activity event.
+    messages:
+    - $ref: '#/channels/activities/messages/activity'
+  receiveDelivery:
+    action: receive
+    channel:
+      $ref: '#/channels/deliveries'
+    summary: Receive a message delivery status event.
+    messages:
+    - $ref: '#/channels/deliveries/messages/delivery'
+  receiveContactEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/contacts'
+    summary: Receive a contact lifecycle event.
+    messages:
+    - $ref: '#/channels/contacts/messages/contact'
+  receiveBulkContacts:
+    action: receive
+    channel:
+      $ref: '#/channels/bulkContacts'
+    summary: Receive the result of a bulk contact import.
+    messages:
+    - $ref: '#/channels/bulkContacts/messages/bulkContacts'
+  receiveIncomingSms:
+    action: receive
+    channel:
+      $ref: '#/channels/incomingSms'
+    summary: Receive an inbound SMS.
+    messages:
+    - $ref: '#/channels/incomingSms/messages/incomingSms'
+components:
+  schemas:
+    SignatureEnvelope:
+      type: object
+      description: >-
+        Fields present on the body of every webhook POST, used together with the Authorization
+        header to verify authenticity.
+      properties:
+        account_id:
+          type: string
+          description: String with your account ID.
+        timestamp:
+          type: integer
+          description: Number of seconds passed since January 1, 1970.
+        token:
+          type: string
+          description: Randomly generated string with length 50.
+    ContactSummary:
+      type: object
+      description: Embedded contact summary carried on activity and delivery events.
+      properties:
+        _id: {type: string, description: Id of the contact}
+        user_id: {type: string, description: Custom user_id of the contact}
+        device_id: {type: string, description: Associated device_id}
+        name_first: {type: string, description: First name of the contact}
+        name_last: {type: string, description: Last name of the contact}
+        email: {type: string, description: Email of the contact}
+        phone: {type: string, description: Phone number with country code of the contact}
+    Activity:
+      allOf:
+      - $ref: '#/components/schemas/SignatureEnvelope'
+      - type: object
+        properties:
+          created_at: {type: string, description: The activity created date}
+          _id: {type: string, description: The activity id}
+          origin:
+            type: string
+            description: The origin of metric.
+            enum: [api, sdk, campaign]
+          type:
+            type: string
+            description: Describes the activity type.
+            enum: [event, update, custom, open_app, uninstall_app, subscribe_push, unsubscribe_push, add_cart, remove_cart, product_view, product_refund, purchase_failed, gps_location, contact_status]
+          event_type:
+            type: string
+            description: Describes a type of event related with campaigns.
+            enum: [opened, delivered, clicked, unsubscribed, sent, failed]
+          updated_field: {type: string, description: The name of field updated, only available if type is 'update'}
+          updated_field_value: {description: The value of updated field, only available if type is 'update'}
+          custom: {description: The custom raw metric, only available if type is 'custom' and origin is 'sdk'}
+          custom_key: {type: string, description: The key of custom metric, only available if type is 'custom'}
+          custom_value: {description: The value of custom metric, only available if type is 'custom'}
+          old_status: {description: The old status of contact, only available if type is 'contact_status'}
+          current_status: {description: Contact status, only available if type is 'contact_status'}
+          contact:
+            $ref: '#/components/schemas/ContactSummary'
+          app:
+            type: object
+            description: Only available if origin is 'sdk'.
+            properties:
+              _id: {type: string}
+              name: {type: string}
+              icon: {type: string}
+          campaign:
+            type: object
+            description: Only available if origin is 'campaign'.
+            properties:
+              _id: {type: string}
+              name: {type: string}
+          product:
+            type: object
+            description: Only available if type is related with purchase or product.
+            properties:
+              UUID: {type: string, description: Unique identifier of product}
+              name: {type: string}
+              price: {description: Price of product}
+              currency: {type: string}
+    Delivery:
+      allOf:
+      - $ref: '#/components/schemas/SignatureEnvelope'
+      - type: object
+        properties:
+          id: {type: string, description: The delivery id}
+          created_at: {type: string, description: The delivery created date}
+          updated_at: {type: string, description: The delivery updated date}
+          channel:
+            type: string
+            description: The delivery channel.
+            enum: [sms, push, email]
+          status:
+            type: string
+            description: >-
+              The status of delivery. Enum copied verbatim from the published reference,
+              including the provider's own misspelling "deliverd" and the placeholder "undefined".
+            enum: [none, queued, sent, deliverd, opened, clicked, rejected, undefined, undelivered, forbidden_country_code, failed, bounced, unsubscribed, dropped, complained]
+          refunded: {type: boolean, description: If true, the money was refunded to your account}
+          url: {type: [string, 'null'], description: Url only available if status is clicked; the URL the user clicked}
+          campaign:
+            type: object
+            description: Only available if the delivery was created in the Cendyn CRM Manager.
+            properties: {_id: {type: string}, name: {type: string}}
+          template:
+            type: object
+            description: Only available if created in the Manager and channel is email.
+            properties: {_id: {type: string}, name: {type: string}}
+          template_data:
+            type: object
+            properties:
+              sender: {type: string, description: Sender of email (email channel only)}
+              subject: {type: string, description: Subject of email (email channel only)}
+              content: {type: string, description: Content of sms or push message}
+              reply_to: {type: string, description: Email to reply to (email channel only)}
+          landing_page_sms:
+            type: object
+            description: Only when channel is sms and the message contains a landing page link.
+            properties: {_id: {type: string}, name: {type: string}, url: {type: string}}
+          landing_page_push:
+            type: object
+            description: Only when channel is push and the message contains a landing page link.
+            properties: {_id: {type: string}, name: {type: string}, url: {type: string}}
+          channel_data: {description: Data of delivery}
+          contact:
+            $ref: '#/components/schemas/ContactSummary'
+          app:
+            type: object
+            description: Only available if channel is push.
+            properties: {_id: {type: string}, name: {type: string}, icon: {type: string}}
+          device:
+            type: object
+            description: Only available if channel is push.
+            properties:
+              _id: {type: string, description: Id of device}
+              type: {type: string, description: Type of the device, enum: [ios, android, web]}
+              device_push_token: {type: string, description: Push token of the device}
+    ContactEvent:
+      allOf:
+      - $ref: '#/components/schemas/SignatureEnvelope'
+      - type: object
+        properties:
+          action:
+            type: string
+            description: Defines the action of the contact event.
+            enum: [create, channel_subscription, update, destroy]
+          origin:
+            type: string
+            description: Origin of event.
+            enum: [sdk, platform_individual, platform_bulk, validation, campaign, api]
+          origin_sdk:
+            type: string
+            description: Type of device, only available if origin is sdk.
+            enum: [ios, android, web]
+          contact:
+            type: object
+            description: >-
+              Contact information as returned by the GET request when action is create and origin
+              is platform_individual.
+            properties:
+              id: {type: string, description: Cendyn CRM id of the contact}
+              user_id: {type: string, description: User id of the contact}
+              changes:
+                type: object
+                description: >-
+                  A JSON with keys of the changed field and the new value. Only available for the
+                  action update and origin platform_individual or sdk.
+              contact_url:
+                type: string
+                description: >-
+                  An url to GET the full contact information by API. Only available for the action
+                  update and origin platform_individual or sdk.
+          contacts_ids:
+            type: array
+            description: An array of contact_ids, only available if origin is platform_bulk.
+            items: {type: string}
+          user_ids:
+            type: array
+            description: An array of user_ids, only available if origin is platform_bulk.
+            items: {type: string}
+          channel_subscription:
+            type: object
+            description: Contact subscription information, if action is channel_subscription.
+            properties:
+              channel: {type: string, description: Channel name of subscription status}
+              blacklisted: {type: boolean, description: If true this channel is blacklisted}
+              origin: {type: string, description: Origin of the event}
+              date: {type: string, description: Date and time when this event occurred}
+    BulkContacts:
+      allOf:
+      - $ref: '#/components/schemas/SignatureEnvelope'
+      - type: object
+        properties:
+          contacts_valid_count: {type: integer, description: Number of contacts saved in Cendyn CRM}
+          contacts_failed_count: {type: integer, description: Number of contacts failed to save in Cendyn CRM}
+          failed_contacts:
+            type: array
+            description: Array that contains failed contacts.
+            items:
+              type: object
+              properties:
+                contact: {type: object, description: Contact params of a particular failed contact}
+                error: {description: 'Description because contact save failed. NOTE: the published example emits this key as "errors" with an array value.'}
+          valid_contacts:
+            type: array
+            description: 'Array that contains valid contacts with basic fields: _id, user_id, email, phone_countrycode, phone_number.'
+            items:
+              type: object
+              properties:
+                _id: {type: string, description: Cendyn CRM id of the contact}
+                user_id: {type: string, description: User id of the contact}
+                email: {type: string, description: Email of the contact}
+                phone_countrycode: {description: Phone country code of the contact}
+                phone_number: {description: Phone number of the contact}
+    IncomingSms:
+      allOf:
+      - $ref: '#/components/schemas/SignatureEnvelope'
+      - type: object
+        properties:
+          id: {type: string, description: The incoming sms identificator}
+          received_at: {type: string, description: Date of received sms}
+          text: {type: string, description: Message text}
+          from: {type: string, description: Phone number that sent this text message}
+  messages:
+    Activity:
+      name: activity
+      title: Activity event
+      contentType: application/json
+      summary: Contact interaction or behaviour.
+      payload:
+        $ref: '#/components/schemas/Activity'
+      bindings:
+        http:
+          method: POST
+          headers:
+            type: object
+            properties:
+              Authorization:
+                type: string
+                description: Hex HMAC-SHA256 digest of concat(timestamp, token) keyed with the account secret.
+      examples:
+      - name: campaignSent
+        summary: Campaign message sent, from the published reference.
+        payload:
+          created_at: '2016-12-09T15:28:28Z'
+          _id: 584acd9c85216d892f000002
+          origin: campaign
+          type: event
+          event_type: sent
+          contact:
+            _id: 584acff2f92ea1bcf7000012
+            user_id: jhon_doe
+            name_first: Jhon
+            name_last: doe
+            phone: '+346xxxxxxxx'
+            device_id: 5848408485216d13d1000009
+          campaign:
+            _id: 5848408485216d13d100000a
+            name: Welcome email
+          timestamp: 1481297309
+          token: REDACTED_EXAMPLE_WEBHOOK_TOKEN
+          account_id: REDACTED_EXAMPLE_ACCOUNT_ID
+    Delivery:
+      name: delivery
+      title: Delivery event
+      contentType: application/json
+      summary: Message delivery status change on the sms, push or email channel.
+      payload:
+        $ref: '#/components/schemas/Delivery'
+      bindings:
+        http:
+          method: POST
+      examples:
+      - name: emailDelivered
+        summary: Email delivered, from the published reference.
+        payload:
+          id: 584acffdf92ea1e99a000001
+          created_at: '2016-12-09T15:38:37Z'
+          updated_at: '2016-12-09T15:38:49Z'
+          channel: EMAIL
+          status: delivered
+          refunded: false
+          url: null
+          campaign: {_id: 5848408485216d13d100000a, name: Welcome}
+          timestamp: 1481297931
+          token: REDACTED_EXAMPLE_WEBHOOK_TOKEN
+          account_id: REDACTED_EXAMPLE_ACCOUNT_ID
+    ContactEvent:
+      name: contactEvent
+      title: Contact lifecycle event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContactEvent'
+      bindings:
+        http:
+          method: POST
+      examples:
+      - name: contactUpdated
+        summary: Contact updated on the platform, from the published reference. Note the thin payload plus contact_url fetch pointer.
+        payload:
+          action: update
+          origin: platform_individual
+          contact:
+            id: 5b6d96991a7e4e8ac8000128
+            user_id: '6712'
+            changes: {city: New York}
+            contact_url: https://api.eu.cendyncrm.com/v2/account/5a9eb2cd1a7e4e6b6f000007/contact/5b6d96991a7e4e8ac8000128
+          timestamp: 1533909631
+          token: REDACTED_EXAMPLE_WEBHOOK_TOKEN
+          account_id: REDACTED_EXAMPLE_ACCOUNT_ID
+      - name: bulkDestroy
+        summary: Bulk contact destroy on the platform, from the published reference.
+        payload:
+          action: destroy
+          origin: platform_bulk
+          contacts_ids: [5b6d96991a7e4e8ac8000002, 5b6d96991a7e4e8ac8000003]
+          users_ids: ['9673', '8086']
+          timestamp: 1533908635
+          token: REDACTED_EXAMPLE_WEBHOOK_TOKEN
+          account_id: REDACTED_EXAMPLE_ACCOUNT_ID
+    BulkContacts:
+      name: bulkContacts
+      title: Bulk contact import result
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BulkContacts'
+      bindings:
+        http:
+          method: POST
+    IncomingSms:
+      name: incomingSms
+      title: Incoming SMS
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/IncomingSms'
+      bindings:
+        http:
+          method: POST
+      examples:
+      - name: inboundText
+        summary: Inbound text message, from the published reference.
+        payload:
+          id: 599bf99af70366f2be000001
+          received_at: '2018-01-23T15:38:37Z'
+          text: This simple message text
+          from: 346xxxxxxxx
+          timestamp: 1503394216
+          token: REDACTED_EXAMPLE_WEBHOOK_TOKEN
+          account_id: REDACTED_EXAMPLE_ACCOUNT_ID

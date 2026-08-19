@@ -1,0 +1,45 @@
+generated: '2026-08-13'
+method: probed
+source:
+- https://developers.cendyncrm.com/api/reference
+- https://developers.cendyncrm.com/api/webhooks
+api: Cendyn CRM (PUSHTech) REST API
+limit_count: 0
+rate_limits: []
+response_headers: []
+exhaustion_status: null
+retry_after: false
+probe:
+  date: '2026-08-13'
+  requests:
+  - url: https://api.eu.cendyncrm.com/v2/account/000000000000000000000000/contact
+    http_status: 401
+    headers_present: [content-type, cache-control, x-request-id, x-runtime, strict-transport-security, vary, content-length]
+    rate_limit_headers: none
+  - url: https://api.us.cendyncrm.com/v2/account/000000000000000000000000/contact
+    http_status: 401
+    headers_present: [content-type, cache-control, x-request-id, x-runtime, strict-transport-security, vary, content-length]
+    rate_limit_headers: none
+note: >-
+  An honest zero. The Cendyn CRM developer portal publishes no rate limits, quotas, burst
+  allowances or throttling policy on any of its four pages, and no X-RateLimit-*, RateLimit-*
+  or Retry-After header was returned on live unauthenticated responses from either data center.
+  An agent has no runtime signal for how hard it may call this API and no documented status code
+  for exhaustion.
+related_quota:
+  kind: consumption-balance
+  documented: true
+  note: >-
+    The API does expose a consumption meter that behaves like a quota, though it is not a rate
+    limit: GET /v2/account/{account_id}/balance/current (operationId currentBalanceAccount)
+    returns a numeric balance and currency. Email, SMS and push deliveries draw down that balance,
+    and contact email validation exposes create_if_no_credit to control behaviour when credit runs
+    out. What the API does when the balance reaches zero is not documented.
+  operation: currentBalanceAccount
+  source: https://developers.cendyncrm.com/api/docs/account/current_balance
+webhook_retry_budget:
+  note: >-
+    The only published rate contract on the whole surface is on the outbound side: webhook POSTs
+    that do not return 200 or 406 are retried for 4 hours at 5m, 5m, 10m, 10m, 30m, 1h, 2h.
+    Delivery-channel events are never retried.
+  source: https://developers.cendyncrm.com/api/webhooks

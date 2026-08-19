@@ -1,0 +1,67 @@
+generated: '2026-08-13'
+method: probed
+source: live HTTPS probes of every host named in apis.yml and in openapi/push-cendyn-crm-openapi.yml servers[]
+result: no-documents
+note: >-
+  Every /.well-known/ path was probed on all four live hosts and NONE returned a document.
+  No WellKnown, SecurityTxt or APICatalog pointer is emitted from this file — it records an
+  absence, not a presence. Two distinct negative shapes were observed and both are recorded
+  honestly below: the API hosts return a real HTTP 404 with a JSON body, while the marketing
+  and developer-portal hosts are catch-alls that answer HTTP 200 with a ~1.38 MB HTML
+  "page you were looking for" shell for every unknown path. A 200 carrying HTML is NOT a
+  document and is scored here as a miss (soft-404).
+hosts:
+- host: https://api.eu.cendyncrm.com
+  role: API base URL (EU data center)
+  behaviour: honest-404
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://api.us.cendyncrm.com
+  role: API base URL (US data center)
+  behaviour: honest-404
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://developers.cendyncrm.com
+  role: developer portal / API reference
+  behaviour: soft-404
+  soft_404_note: >-
+    Returns HTTP 200 with a 1,382,154-byte HTML error page for every unknown path, including
+    every /.well-known/* path and /openapi.json, /llms.txt and /swagger.json. Content-Type is
+    echoed from the requested extension (application/json for .json, text/plain for .txt), so
+    status code and Content-Type alone are both misleading. Treated as a miss.
+  documents:
+  - {path: /.well-known/security.txt, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/openid-configuration, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/oauth-authorization-server, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/api-catalog, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/agent-card.json, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/agent.json, status: 200, document: false, body: html-shell}
+- host: https://pushtech.com
+  role: legacy marketing site (redirects to www.pushtech.com)
+  behaviour: soft-404
+  soft_404_note: Returns HTTP 200 with the marketing homepage HTML for every unknown path.
+  documents:
+  - {path: /.well-known/security.txt, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/openid-configuration, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/agent-card.json, status: 200, document: false, body: html-shell}
+  - {path: /.well-known/agent.json, status: 200, document: false, body: html-shell}
+not_probed:
+- host: https://www.cendyn.com
+  reason: >-
+    Parent-company marketing site sits behind a Cloudflare bot challenge; every request returns
+    HTTP 403 with a "Just a moment..." interstitial, including with a browser User-Agent.
+    Not a provider absence — an unprobeable host.

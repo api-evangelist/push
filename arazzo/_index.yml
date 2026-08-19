@@ -1,0 +1,24 @@
+generated: '2026-08-13'
+method: generated
+source: openapi/push-cendyn-crm-openapi.yml
+api: Cendyn CRM (PUSHTech) REST API
+note: >-
+  Native Arazzo 1.0.1 workflows authored by API Evangelist against openapi/push-cendyn-crm-openapi.yml.
+  Every operationId used in every step was verified to exist verbatim in that spec. Cendyn CRM
+  publishes no workflow or recipe documentation of its own.
+workflows:
+- file: push-onboard-and-welcome-guest.yml
+  workflowId: onboardAndWelcomeGuest
+  title: Onboard a guest and send a welcome message
+  summary: >-
+    Check the account balance, look the guest up by user_id to avoid a duplicate, create the
+    contact with GDPR consent recorded, find the audience list, send a welcome email, and confirm
+    the delivery reached a terminal status.
+  operations: [currentBalanceAccount, listContact, createContact, listAudienceList, sendEmailDeliveries, listDeliveries]
+- file: push-load-catalog-and-purchase-history.yml
+  workflowId: loadCatalogAndPurchaseHistory
+  title: Load a product catalog and attach guest purchase history
+  summary: >-
+    Discover account-specific product custom fields, create a product, record a purchase against
+    an existing contact, and read both back — the flow that turns the contact database into a CDP.
+  operations: [listProductCustomFields, createProduct, createPurchase, listPurchase, showProduct]

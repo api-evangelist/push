@@ -1,0 +1,81 @@
+generated: '2026-08-13'
+method: derived
+source:
+- openapi/push-cendyn-crm-openapi.yml
+- https://developers.cendyncrm.com/api/reference
+- https://developers.cendyncrm.com/api/webhooks
+probe:
+  method: probed
+  date: '2026-08-13'
+  urls:
+  - https://api.eu.cendyncrm.com/v2/account/000000000000000000000000/contact
+  - https://api.us.cendyncrm.com/v2/account/000000000000000000000000/contact
+api: Cendyn CRM (PUSHTech) REST API
+format: bare-json
+rfc9457: false
+error_reference_published: false
+envelope:
+  content_type: application/json
+  shape: '{"error": "<message>"}'
+  members:
+  - {name: error, type: string, description: Single human-readable message. No machine-readable code, type URI or field pointer.}
+  note: >-
+    Not RFC 9457. There is no `type`, `title`, `status`, `detail` or `instance` member, no
+    application-level error code, and no per-field validation detail — an agent cannot branch on
+    anything except the HTTP status and a free-text string.
+problems:
+- status: 401
+  title: Authorization failure
+  observed: true
+  example: '{"error":"authorization failure for account: 000000000000000000000000"}'
+  cause: >-
+    Missing, malformed or invalid Authorization header, or an account secret that does not match
+    the account_id in the path.
+  remediation: >-
+    Send `Authorization: Token token={account_secret}`. Confirm the account lives in the data
+    center you are calling — an EU account secret will fail against api.us.cendyncrm.com and vice
+    versa. Some operations require the account master secret instead.
+  www_authenticate: absent
+  applies_to: all 67 operations
+  source: probed
+- status: 404
+  title: Route not found
+  observed: true
+  example: '{"error":"Route not found, please visit https://developers.cendyncrm.com/api/reference"}'
+  cause: Unknown path on the API host.
+  remediation: Check the path and the /v2 prefix against the reference. Note that Sync Data is served WITHOUT a version prefix.
+  applies_to: any unmatched route on api.eu / api.us
+  source: probed
+- status: 200
+  title: Successful read
+  cause: Documented success status for all 26 GET operations, all 12 PUT operations, all 13 DELETE operations and the three delivery-send operations.
+  source: openapi/push-cendyn-crm-openapi.yml
+  not_an_error: true
+- status: 201
+  title: Created
+  cause: Documented success status for 13 of the 16 POST operations (all creates and the bulk contact create).
+  source: openapi/push-cendyn-crm-openapi.yml
+  not_an_error: true
+gaps:
+- >-
+  The developer portal publishes NO error reference page. The reference tables for all 67
+  operations document only the success status; no 4xx or 5xx response is documented for any
+  operation. Every non-2xx entry above was established by probing, not by reading the docs.
+- >-
+  No validation-error shape is published. The delivery-send and contact-create operations accept
+  30+ body members with stated constraints ("Boolean type", "ISO_8601 format", "ISO-2 format",
+  "MALE or FEMALE") but the response for violating one of them is undocumented.
+- >-
+  No rate-limit or quota-exhaustion error is documented, even though deliveries and contact email
+  validation consume account balance (see currentBalanceAccount). The behaviour when balance
+  reaches zero is unpublished.
+webhook_delivery_errors:
+  note: >-
+    The webhooks documentation defines the inverse contract — the status codes the PROVIDER reads
+    from the SUBSCRIBER. Captured here because it is the only documented status-code semantics on
+    the whole surface.
+  codes:
+  - {status: 200, meaning: Success. The POST is considered delivered and is not retried.}
+  - {status: 406, meaning: Rejected. The POST is considered refused and is not retried.}
+  - {status: other, meaning: 'Retried on a fixed schedule for 4 hours: 5m, 5m, 10m, 10m, 30m, 1h, 2h. Delivery-channel events are never retried.'}
+  source: https://developers.cendyncrm.com/api/webhooks

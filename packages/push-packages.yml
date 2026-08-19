@@ -1,21 +1,78 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: http://developers.pushtech.com/websdk
+source:
+- https://developers.cendyncrm.com/websdk
+- https://api.github.com/orgs/pushtech/repos
+- https://api.github.com/orgs/Cendyn/repos
 api: Cendyn CRM (PUSHTech)
 packages:
 - name: PUSHTECH Web SDK
   official: true
-  language: JavaScript
-  distribution: cdn
-  loader: https://assets-cdn.pushtech.com/sdk/web/2.0/PUSHTECHWebSDK.2.9.0.min.js
+  language: javascript
+  registry: cdn
   version: 2.9.0
-  service_worker: pushtech-sw.js
+  published: '2024-06-26'
+  published_source: 'Last-Modified header on the pinned CDN asset (probed 2026-08-13, HTTP 200, 30,250 bytes)'
+  url: https://assets-cdn.pushtech.com/sdk/web/2.0/PUSHTECHWebSDK.2.9.0.min.js
+  install: '<script src="https://assets-cdn.pushtech.com/sdk/web/2.0/PUSHTECHWebSDK.2.9.0.min.js" type="text/javascript"></script>'
+  pinned: true
+  entry_point: 'new PUSHTechSDK(app_id, app_secret, user_id)'
+  auth: app_id + app_secret (per-app credentials, distinct from the REST account secret)
   description: >-
-    First-party JavaScript library that integrates Cendyn CRM (PUSHTech) into web
-    applications: initialize user sessions, track metrics (geolocation, demographics,
-    social login, e-commerce events), manage web push notifications via a service
-    worker, and transmit collected metrics with sendMetrics().
-  registry: null
-notes: >-
-  Loaded via a standard <script> tag from the vendor CDN; no npm/PyPI/Maven package
-  is published in the documentation.
+    First-party JavaScript library that integrates Cendyn CRM (PUSHTech) into web applications:
+    initialize a user session, create per-user metrics (geolocation, birthdate, country, city,
+    name, language, gender, email, phone, login/logout, user id, list subscribe/unsubscribe, GDPR
+    consent, e-commerce events), manage web push notifications via a service worker, and transmit
+    collected metrics with sendMetrics(). Options setOptions({enable_geolocation, enable_heartbeat})
+    are set before init().
+  note: >-
+    Distributed by <script> tag from the vendor CDN only — there is no npm, PyPI, Maven, NuGet,
+    Go, RubyGems, Packagist or crates.io package for it, so there is no registry metadata endpoint
+    to query. The version above is read from the pinned filename and the publication date from the
+    asset's Last-Modified header. That date is the strongest currency signal available for this
+    provider: the SDK build is over two years old, and it still carries the retired PUSHTech brand
+    in both its class name and its CDN hostname while the platform, the portal and the API host
+    have all been rebranded to Cendyn CRM.
+- name: PUSHTECH Web SDK service worker
+  official: true
+  language: javascript
+  registry: cdn
+  version: 1.0.0
+  published: '2019-12-16'
+  published_source: 'Last-Modified header on the pinned CDN asset (probed 2026-08-13, HTTP 200, 958 bytes)'
+  url: https://assets-cdn.pushtech.com/sdk/web/sw/1.0/sw.1.0.0.min.js
+  install: "Create pushtech-sw.js in the web root containing: importScripts('https://assets-cdn.pushtech.com/sdk/web/sw/1.0/sw.1.0.0.min.js');"
+  pinned: true
+  description: >-
+    Service worker that backs web push notification delivery for the Web SDK. The file MUST be
+    named pushtech-sw.js and MUST sit at the root of the site or web push will not work.
+  note: >-
+    Companion to the Web SDK, not independently useful. Last modified 2019-12-16 — over six years
+    old.
+registries_checked:
+- {registry: npm, queries: [pushtech, cendyn, cendyncrm, pushtech-sdk, '@pushtech/web-sdk'], result: 404, found: false}
+- {registry: pypi, queries: [pushtech], result: 404, found: false}
+- {registry: cdn, host: assets-cdn.pushtech.com, result: 200, found: true}
+sample_applications:
+  note: >-
+    The pushtech GitHub org publishes mobile integration SAMPLES, not distributable SDK packages.
+    They are first-party and they are real, but none is installable from a package registry and
+    all are long abandoned. Listed here as evidence of the mobile surface, not as SDKs.
+  org: https://github.com/pushtech
+  repos:
+  - {name: iOS-sample-app, language: Objective-C, last_push: '2016-07-01', description: 'Example integration for an iOS app'}
+  - {name: Android-sample-app, language: Java, last_push: '2016-07-01'}
+  - {name: Android-Chat-Sample-App, language: Java, last_push: '2015-04-16', description: 'The Android PUSHTech chat sample app'}
+  - {name: IOS-Chat-Sample-App, last_push: '2015-04-09'}
+  forks_not_first_party:
+  - {name: money-rails, note: fork of RubyMoney money-rails}
+  - {name: gush, note: 'fork of the gush workflow runner; last push 2025-08-06 — the only recently-touched repo in the org'}
+  - {name: mailgun-ruby, note: fork of Mailgun's official Ruby library}
+  - {name: ruby-mcrypt, note: fork of ruby-mcrypt}
+github_orgs:
+- {org: pushtech, url: 'https://github.com/pushtech', public_repos: 8, note: 'legacy brand; four first-party samples, four forks of third-party Ruby libraries'}
+- {org: Cendyn, url: 'https://github.com/Cendyn', public_repos: 0, note: 'the current brand''s org exists but publishes nothing'}
+server_side_sdks: []
+server_side_sdks_note: >-
+  There is no server-side client library in any language for the REST API documented at
+  developers.cendyncrm.com. Every one of the 67 operations must be called with a raw HTTP client.

@@ -1,0 +1,133 @@
+generated: '2026-08-13'
+method: derived
+source:
+- openapi/push-cendyn-crm-openapi.yml
+- https://developers.cendyncrm.com/api/authentication
+- https://developers.cendyncrm.com/api/webhooks
+- security/push-domain-security.yml
+api: Cendyn CRM (PUSHTech) REST API
+note: >-
+  Cross-cutting standards posture, derived from the derived OpenAPI, the developer portal, and
+  live probes. Cendyn CRM publishes no conformance or certification claims of its own on the
+  developer portal, so no `Compliance` pointer is emitted in apis.yml — every row below is our
+  observation, not a provider assertion.
+standards:
+- id: openapi
+  conforms: false
+  evidence: >-
+    The provider publishes no OpenAPI document. openapi/push-cendyn-crm-openapi.yml is DERIVED by
+    API Evangelist from the provider's HTML reference and is not a provider artifact.
+- id: rest
+  conforms: partial
+  evidence: >-
+    Resource-oriented, account-scoped paths with conventional verb mapping (GET read, POST create,
+    PUT update, DELETE delete). Two deviations: PUT /coupon_lists/redeem and
+    PUT /hotel_data/{uuid}/add_language are RPC-style state transitions, and
+    DELETE /purchases/delete_group is a bulk filter delete.
+- id: oauth2
+  conforms: false
+  evidence: No OAuth2 securityScheme, no authorization or token endpoint, no scopes. Static bearer-style token only.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on both API hosts.
+- id: rfc6750-bearer
+  conforms: false
+  evidence: >-
+    Uses the Authorization header but with a non-standard `Token token=<secret>` scheme rather
+    than `Bearer <token>`, and returns no WWW-Authenticate challenge on 401.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'Errors are bare application/json {"error": "<string>"} — no type/title/status/detail, no application/problem+json media type.'
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header; no deprecation policy published.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on both API hosts and an HTML shell on the portal host. See well-known/push-well-known.yml.
+- id: rfc8615-well-known
+  conforms: false
+  evidence: No /.well-known/ document of any kind is served. See well-known/push-well-known.yml.
+- id: rfc8615-agent-card
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json return 404 on both API hosts. No a2a/ artifact is emitted.
+- id: mcp
+  conforms: false
+  evidence: 'No MCP server. POST tools/list to /mcp returned 404 on api.eu, api.us and the portal host.'
+- id: graphql
+  conforms: false
+  evidence: No /graphql surface is documented or reachable.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    The provider publishes no AsyncAPI document. asyncapi/push-webhooks-asyncapi.yml is DERIVED by
+    API Evangelist from the provider's webhook reference.
+- id: webhooks
+  conforms: true
+  evidence: >-
+    A real, documented webhook surface with five event groups, published payload field
+    dictionaries, a signature verification contract and a retry schedule.
+    https://developers.cendyncrm.com/api/webhooks
+- id: hmac-webhook-signing
+  conforms: true
+  evidence: >-
+    HMAC-SHA256 over the concatenation of timestamp and token, keyed with the account secret,
+    compared against the Authorization header. Verification samples published in PHP, Python and
+    Ruby.
+- id: idempotency
+  conforms: false
+  evidence: No idempotency key, no idempotent-retry contract on any of the 67 documented operations.
+- id: pagination
+  conforms: false
+  evidence: No page, cursor, offset or limit parameter on any of the documented list operations.
+- id: rate-limit-headers
+  conforms: false
+  evidence: 'No X-RateLimit-*, RateLimit-* or Retry-After header observed on live responses from either data center.'
+- id: request-id-tracing
+  conforms: true
+  evidence: 'x-request-id returned on live responses from both data centers (probed 2026-08-13). Undocumented, but present.'
+- id: https-only
+  conforms: true
+  evidence: >-
+    Both API hosts serve HTTP/2 over TLS 1.3 and return
+    strict-transport-security max-age=63072000, includeSubDomains.
+- id: hsts
+  conforms: partial
+  evidence: >-
+    Present on the API hosts (max-age=63072000; includeSubDomains) but absent on the legacy
+    pushtech.com marketing host. See security/push-domain-security.yml.
+- id: dnssec
+  conforms: false
+  evidence: Not enabled on pushtech.com or cendyncrm.com. See security/push-domain-security.yml.
+- id: caa
+  conforms: false
+  evidence: No CAA records on pushtech.com or cendyncrm.com.
+- id: dmarc
+  conforms: partial
+  evidence: 'Published on both domains, but at reduced enforcement: pushtech.com p=quarantine, cendyncrm.com p=none.'
+- id: gdpr
+  conforms: partial
+  evidence: >-
+    Not a certification claim. The API models GDPR as first-class data: the contact object carries
+    gdpr_marketing_consent, gdpr_accept_terms, gdpr_date and gdpr_remote_ip, and the Web SDK
+    exposes createGDPRAcceptTerms(). This is GDPR tooling for the customer's own compliance, not
+    evidence of a Cendyn certification.
+- id: iso-8601
+  conforms: true
+  evidence: 'Date fields are documented as ISO_8601 (e.g. born_date, gdpr_date: "1990-01-01T00:00:00Z").'
+- id: iso-3166-1-alpha-2
+  conforms: true
+  evidence: 'Contact country and language are documented as ISO-2 codes; the Web SDK createCountryMetric takes ISO 3166-1 alpha-2.'
+- id: e123-phone
+  conforms: true
+  evidence: Web SDK createPhoneNumberMetric documented as E.123 format.
+- id: data-residency
+  conforms: true
+  evidence: >-
+    Two independent data centers with distinct base URLs (api.eu.cendyncrm.com,
+    api.us.cendyncrm.com) selected per account. Relevant to EU data-residency obligations.
+certifications_published: []
+certifications_note: >-
+  No SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP or CSA STAR claim is made anywhere on the developer
+  portal or the PUSHTech site. The parent site www.cendyn.com is behind a Cloudflare bot challenge
+  (HTTP 403 to every client tested) and could not be read, so the absence is confirmed only for
+  the hosts that are readable.

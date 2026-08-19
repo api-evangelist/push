@@ -1,0 +1,150 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Cendyn CRM (PUSHTech)
+  version: 1.0.0
+extends: openapi/push-cendyn-crm-openapi.yml
+x-generated: '2026-08-13'
+x-method: generated
+x-source:
+  - conventions/push-conventions.yml
+  - errors/push-problem-types.yml
+  - lifecycle/push-lifecycle.yml
+  - rate-limits/push-rate-limits.yml
+  - data-model/push-data-model.yml
+x-note: >-
+  Captures API Evangelist's enhancements over the derived Cendyn CRM OpenAPI as an OpenAPI Overlay
+  1.0.0 document rather than mutating the spec. Every action below records something established
+  by reading the provider's docs or by probing the live API — the runtime semantics the provider
+  does not publish in machine-readable form.
+actions:
+  - target: $.info
+    description: Record the API Evangelist rating context and the runtime facts an agent needs before the first call.
+    update:
+      x-apievangelist-profile: https://apis.io/provider/push/
+      x-idempotency-supported: false
+      x-pagination-supported: false
+      x-rate-limit-published: false
+      x-error-format: bare-json
+      x-request-id-header: x-request-id
+      x-status-page: null
+      x-changelog: null
+      x-mcp-server: null
+      x-agent-card: null
+
+  - target: $.servers[0]
+    description: Note that data centers are per-account and not interchangeable.
+    update:
+      x-region: EU
+      x-account-bound: true
+      x-note: >-
+        An account exists in exactly one data center. Calling the wrong host returns 401 with the
+        same body as an invalid token, which makes region mismatch and auth failure
+        indistinguishable from the response alone.
+
+  - target: $.servers[1]
+    description: Same note for the US data center.
+    update:
+      x-region: US
+      x-account-bound: true
+
+  - target: $.components.securitySchemes.accountToken
+    description: Record what the 401 does and does not tell a client.
+    update:
+      x-scheme-literal: 'Token token='
+      x-rfc6750-bearer: false
+      x-www-authenticate-on-401: false
+      x-credential-tiers: [account_secret, account_master_secret, app_secret]
+      x-rotation-policy-published: false
+
+  - target: $.paths['/account/{account_id}/sync_data'].post
+    description: Flag the unversioned bulk ingest resource.
+    update:
+      x-unversioned: true
+      x-note: >-
+        The only resource on this API published without a /v2 path prefix. Sits outside whatever
+        the v2 versioning line means; treat as a legacy-shaped bulk endpoint.
+
+  - target: $.paths['/v2/account/{account_id}/email/deliveries'].post
+    description: Mark the send operations as consequential and non-retryable.
+    update:
+      x-agentic-consequence: physical
+      x-idempotent: false
+      x-consumes-balance: true
+      x-human-in-the-loop: recommended
+      x-retry-guidance: >-
+        Never blind-retry. On timeout, call listDeliveries filtered by contact_id and a time
+        window to determine whether the message was sent.
+
+  - target: $.paths['/v2/account/{account_id}/sms/deliveries'].post
+    description: Mark the send operations as consequential and non-retryable.
+    update:
+      x-agentic-consequence: physical
+      x-idempotent: false
+      x-consumes-balance: true
+      x-human-in-the-loop: recommended
+
+  - target: $.paths['/v2/account/{account_id}/push/deliveries'].post
+    description: Mark the send operations as consequential and non-retryable, and record the app_id discovery gap.
+    update:
+      x-agentic-consequence: physical
+      x-idempotent: false
+      x-consumes-balance: true
+      x-human-in-the-loop: recommended
+      x-undiscoverable-input: app_id
+      x-note: >-
+        Requires an app_id, but no app resource exists in the REST API. Apps are created and
+        listed only in the Cendyn CRM manager UI, so an agent cannot discover a valid value.
+
+  - target: $.paths['/v2/account/{account_id}/purchases/delete_group'].delete
+    description: Flag the unguarded bulk delete.
+    update:
+      x-agentic-consequence: destructive
+      x-bulk: true
+      x-dry-run: false
+      x-human-in-the-loop: required
+      x-note: >-
+        Deletes many purchase records from a filter expression with no dry-run, no confirmation
+        and no undo. Run the equivalent listPurchase filter and count rows before calling.
+
+  - target: $.paths['/v2/account/{account_id}/balance/current'].get
+    description: Identify the consumption meter.
+    update:
+      x-quota-meter: true
+      x-note: >-
+        The closest thing this API has to a quota signal. Deliveries and contact email validation
+        draw this balance down. No rate card is published and the behaviour at zero is
+        undocumented.
+
+  - target: $.paths['/v2/account/{account_id}/contact'].post
+    description: Record the de-duplication key and the open schema.
+    update:
+      x-idempotent: false
+      x-deduplication-key: user_id
+      x-additional-properties: >-
+        Account-defined custom fields are sent as top-level members using the field name. Discover
+        them with listContactCustomFields; the documented property list is not exhaustive.
+
+  - target: $.paths['/v2/account/{account_id}/contact'].get
+    description: Record the pagination gap on the highest-volume list operation.
+    update:
+      x-pagination: none
+      x-note: >-
+        No page, cursor, offset or limit parameter is published, and no total or next-link is
+        returned. A client cannot determine whether the response is complete.
+
+  - target: $.tags[?(@.name=='Campaigns')]
+    description: Record that campaigns are read-only over the API.
+    update:
+      x-read-only: true
+      description: >-
+        Campaigns are authored in the Cendyn CRM manager UI. The API can list them, show one, and
+        render a per-contact message preview, but cannot create, update, schedule or send a
+        campaign.
+
+  - target: $.tags[?(@.name=='Deliveries')]
+    description: Record the delivery status vocabulary quirks.
+    update:
+      x-status-enum-note: >-
+        The published delivery status list contains the provider's own misspelling "deliverd" and
+        the literal value "undefined". Match on the published strings, not the correct ones.
+      x-events: asyncapi/push-webhooks-asyncapi.yml

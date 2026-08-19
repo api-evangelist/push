@@ -1,0 +1,75 @@
+generated: '2026-08-13'
+method: derived
+status: candidate
+source: openapi/push-cendyn-crm-openapi.yml
+api: Cendyn CRM (PUSHTech) REST API
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: probed
+  note: >-
+    Cendyn CRM ships NO MCP server — neither a remote endpoint nor a local stdio package. The
+    tools below are a CANDIDATE surface derived by API Evangelist from the 67 operations in the
+    derived OpenAPI. Nothing here is reachable today. The `auth` value records what a server
+    WOULD need (the account token), not an authentication mode anyone can use.
+probe:
+  date: '2026-08-13'
+  method: 'POST {"jsonrpc":"2.0","id":1,"method":"tools/list"} with Accept: application/json, text/event-stream'
+  results:
+  - {url: 'https://api.eu.cendyncrm.com/mcp', status: 404}
+  - {url: 'https://api.us.cendyncrm.com/mcp', status: 404}
+  - {url: 'https://developers.cendyncrm.com/mcp', status: 404}
+  - {url: 'https://mcp.cendyn.com/mcp', status: 302, note: 'redirects to a maintenance holding page at maintenance.cdcservices.com'}
+registry_search:
+  npm: 'no @cendyn/*, @pushtech/* or *-mcp package found (registry.npmjs.org 404 on every candidate)'
+  docs: 'no MCP, agent or AI-integration page exists on developers.cendyncrm.com (four pages total: /api, /api/authentication, /api/reference, /api/webhooks, plus /websdk)'
+server:
+  name: cendyn-crm
+  transport: null
+  url: null
+tool_design_note: >-
+  A candidate MCP surface for this API would need to solve two problems the REST API does not
+  solve for itself. First, every operation is scoped to an account_id path segment that the agent
+  must be told; it is not derivable from the token. Second, three operations SEND MESSAGES to real
+  people and draw down a prepaid balance (sendEmailDeliveries, sendPushDeliveries,
+  sendSMSDeliveries) with no idempotency contract, so a retried tool call sends a duplicate
+  message. Those three are marked consequence: physical below and should require confirmation.
+tools:
+- {name: get_account_balance, description: Read the account's current credit balance and currency., source_operation: 'openapi/push-cendyn-crm-openapi.yml#currentBalanceAccount', consequence: read}
+- {name: list_contacts, description: List and filter contacts in the account., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listContact', consequence: read}
+- {name: get_contact, description: Retrieve a single contact by id., source_operation: 'openapi/push-cendyn-crm-openapi.yml#showContact', consequence: read}
+- {name: create_contact, description: Create a contact. Either email or phone (number and countrycode) is required., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createContact', consequence: write}
+- {name: update_contact, description: Update an existing contact., source_operation: 'openapi/push-cendyn-crm-openapi.yml#updateContact', consequence: write}
+- {name: delete_contact, description: Delete a contact., source_operation: 'openapi/push-cendyn-crm-openapi.yml#deleteContact', consequence: write}
+- {name: create_contacts_bulk, description: Create contacts in bulk; completion is reported asynchronously by webhook., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createBulkContact', consequence: write}
+- {name: get_bulk_result, description: Retrieve the result of a bulk contact create., source_operation: 'openapi/push-cendyn-crm-openapi.yml#getBulkContact', consequence: read}
+- {name: validate_contact_email, description: Run email validation against a contact. Consumes account credit., source_operation: 'openapi/push-cendyn-crm-openapi.yml#emailValidationContact', consequence: write}
+- {name: list_audience_lists, description: List audience lists used for segmentation., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listAudienceList', consequence: read}
+- {name: create_audience_list, description: Create an audience list., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createAudienceList', consequence: write}
+- {name: list_campaigns, description: List campaigns. Campaigns are authored in the manager UI and are read-only over the API., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listCampaigns', consequence: read}
+- {name: preview_campaign_message, description: Render a campaign's message as it would appear for one contact., source_operation: 'openapi/push-cendyn-crm-openapi.yml#previewMessageCampaigns', consequence: read}
+- {name: list_deliveries, description: List and filter message deliveries across email, SMS and push., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listDeliveries', consequence: read}
+- {name: get_delivery, description: Retrieve a single delivery and its status., source_operation: 'openapi/push-cendyn-crm-openapi.yml#showDeliveries', consequence: read}
+- {name: send_email, description: Send an email delivery. Reaches a real person and draws down account balance., source_operation: 'openapi/push-cendyn-crm-openapi.yml#sendEmailDeliveries', consequence: physical, human_in_the_loop: recommended}
+- {name: send_sms, description: Send an SMS delivery. Reaches a real person and draws down account balance., source_operation: 'openapi/push-cendyn-crm-openapi.yml#sendSMSDeliveries', consequence: physical, human_in_the_loop: recommended}
+- {name: send_push, description: Send a push notification. Reaches a real device and draws down account balance., source_operation: 'openapi/push-cendyn-crm-openapi.yml#sendPushDeliveries', consequence: physical, human_in_the_loop: recommended}
+- {name: list_hotel_data, description: List hotel records — the hospitality-specific entity., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listHotelData', consequence: read}
+- {name: get_hotel_data, description: Retrieve a single hotel record., source_operation: 'openapi/push-cendyn-crm-openapi.yml#showHotelData', consequence: read}
+- {name: create_hotel_data, description: Create a hotel record., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createHotelHotelData', consequence: write}
+- {name: list_products, description: List products in the catalog., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listProduct', consequence: read}
+- {name: list_purchases, description: List purchases across the account., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listPurchase', consequence: read}
+- {name: create_purchase, description: Record a purchase against a contact., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createPurchase', consequence: write}
+- {name: list_companies, description: List companies (B2B accounts) in the CRM., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listCompany', consequence: read}
+- {name: list_coupon_lists, description: List coupon lists., source_operation: 'openapi/push-cendyn-crm-openapi.yml#listCouponLists', consequence: read}
+- {name: redeem_coupon, description: Redeem a coupon for a contact., source_operation: 'openapi/push-cendyn-crm-openapi.yml#redeemCouponLists', consequence: write}
+- {name: sync_data, description: Bulk composite ingest of contacts and purchases in one payload. Note this resource has no version prefix., source_operation: 'openapi/push-cendyn-crm-openapi.yml#createSyncData', consequence: write}
+coverage:
+  rest_operations_total: 67
+  candidate_tools: 28
+  note: >-
+    28 candidate tools cover the marquee flows. The remaining 39 operations are almost entirely
+    custom-field CRUD across four resources (contact, company, product, hotel data), which is
+    configuration work rather than agent work.

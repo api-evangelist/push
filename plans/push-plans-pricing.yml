@@ -1,0 +1,33 @@
+generated: '2026-08-13'
+method: searched
+source:
+- https://developers.cendyncrm.com/api
+- https://www.pushtech.com/
+- https://www.cendyn.com/
+api: Cendyn CRM (PUSHTech)
+plan_count: 0
+plans: []
+pricing_model: contact-sales
+public_pricing_published: false
+free_tier: false
+self_serve_signup: false
+note: >-
+  No published pricing. Neither the Cendyn CRM developer portal nor the legacy PUSHTech marketing
+  site carries a pricing or plans page; the only commercial calls to action are "REQUEST DEMO" and
+  "CONTACT", both of which route to a sales form. The parent site www.cendyn.com could not be read
+  to confirm (see evidence below), so this is recorded as an honest zero rather than a claim that
+  Cendyn publishes nothing anywhere.
+evidence:
+- {url: 'https://www.pushtech.com/', status: 200, note: 'marketing site; navigation offers Products, Contact, Request Demo, Login — no pricing page'}
+- {url: 'https://www.cendyn.com/pricing', status: 403, note: 'Cloudflare bot challenge ("Just a moment...") — returns 403 to any non-browser client, including with a browser User-Agent'}
+- {url: 'https://developers.cendyncrm.com/api', status: 200, note: 'developer portal API overview; no pricing, no plan tiers, no quota table'}
+consumption_pricing:
+  observed: true
+  note: >-
+    The API implies a prepaid consumption model even though no rate card is published: an account
+    holds a numeric balance in a currency (GET /v2/account/{account_id}/balance/current), email,
+    SMS and push deliveries draw it down, and contact email validation exposes
+    email_validation[create_if_no_credit] to control behaviour when the balance is exhausted.
+    The unit prices behind that balance are not public.
+  operation: currentBalanceAccount
+  cross_ref: rate-limits/push-rate-limits.yml

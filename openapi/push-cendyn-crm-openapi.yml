@@ -1,0 +1,4197 @@
+openapi: 3.1.0
+info:
+  title: Cendyn CRM (PUSHTech) REST API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM /
+    CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon
+    lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API
+    reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn
+    CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description
+    and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against
+      the live docs before production use.
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+tags:
+- name: Account
+- name: Sync Data
+- name: Contact
+- name: Contact Custom fields
+- name: Company
+- name: Company custom fields
+- name: Campaigns
+- name: Product
+- name: Product custom fields
+- name: Coupon lists
+- name: Purchase
+- name: Hotel Data
+- name: Hotel Data custom fields
+- name: Deliveries
+- name: Audience List
+security:
+- accountToken: []
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`.
+        Some operations require the account master secret (`Token token={account.master_secret}`).'
+paths:
+  /v2/account/{account_id}/balance/current:
+    get:
+      operationId: currentBalanceAccount
+      summary: Current Balance — Account
+      tags:
+      - Account
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/account/current_balance
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: id of the account
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                balance: '582.84660'
+                currency: eur5
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /account/{account_id}/sync_data:
+    post:
+      operationId: createSyncData
+      summary: Create — Sync Data
+      tags:
+      - Sync Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/sync_data/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  description: 'String field to indicate the origin of the Contact(s) and Purchase. Example:
+                    “PMS”'
+                options:
+                  description: Options to validate contacts email and receive webhook response information
+                    when the request has been processed
+                contacts:
+                  description: Array of contact data. Maximum 1000 contacts per request.
+                purchase:
+                  description: Booking and Stay information for the contacts that are in the same request.
+                options[email_validation[validate]]:
+                  type: boolean
+                  description: 'If true, validate all contact´s emails of the bulk. This service has an
+                    extra cost and will use credits from your Cendyn CRM account. If not enough credits
+                    the import will be processed without email validation. By default: false'
+                options[email_validation[create_if_invalid]]:
+                  type: boolean
+                  description: 'If true, the contact will be created unless the email is invalid. By default:
+                    false'
+                options[email_validation[create_if_no_credit]]:
+                  description: 'If not enough credits the import will be processed without email validation.
+                    By default: false'
+                options[webhook[url]]:
+                  description: URL where the webhook will send information
+                options[webhook[contacts_extra_fields]]:
+                  description: 'Array that contain extra fields needed to be sent by the webhook.By default
+                    it will be sent by the webhook the following fields: _id, user_id, email, phone_countrycode,
+                    phone_number'
+                options[webhook[purchase_extra_fields]]:
+                  description: 'Array that contain extra fields need to be sent by the webhook. By default
+                    it will be sent by the webhook the following fields: transaction_code, _id'
+                contacts[name_first]:
+                  description: Name of the contact
+                contacts[name_last]:
+                  description: Last name of the contact
+                contacts[email]:
+                  description: Email of the contact
+                contacts[user_id]:
+                  description: Unique identifier of contact in your backend
+                contacts[phone_countrycode]:
+                  description: 'Country code of the contact phone. Example: “+34”'
+                contacts[phone_number]:
+                  description: Phone number without country code of the contact
+                contacts[phone]:
+                  description: Full phone number with country code of the contact
+                contacts[city]:
+                  description: City of the contact
+                contacts[country]:
+                  description: Country of the contact
+                contacts[region]:
+                  description: Region of the contact
+                contacts[zip]:
+                  description: Zip code of the contact
+                contacts[full_address]:
+                  description: Address of the contact
+                contacts[born_date]:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gender]:
+                  description: Gender of the contact (MALE or FEMALE)
+                contacts[language]:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                contacts[facebook_id]:
+                  description: Facebook id of the contact
+                contacts[facebook_friends]:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                contacts[twitter_id]:
+                  description: Twitter id of the contact
+                contacts[twitter_followers]:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                contacts[tags]:
+                  description: Array containing tags for this contact
+                contacts[list_subscriptions[list_id]]:
+                  description: Id of audience list
+                contacts[list_subscriptions[subscribed]]:
+                  type: boolean
+                  description: If true, subscribe from this list
+                contacts[channel_subscriptions[channel]]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                contacts[channel_subscriptions[blacklisted]]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                contacts[gdpr_accept_terms]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                contacts[gdpr_marketing_consent]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                contacts[gdpr_date]:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gdpr_remote_ip]:
+                  description: 'String type: Contact IP when accepted GDPR'
+                contacts[[custom field]]:
+                  description: You can create a custom field and use in every contact, only add parameter
+                    in the json with the name of custom (no label)
+                purchase[campaign_id]:
+                  description: Id of the campaign
+                purchase[UUID]:
+                  description: Universally unique identifier (UUID) of the product
+                purchase[transaction_code]:
+                  description: Transaction code of the product purchase of your backend (unique)
+                purchase[price]:
+                  description: Price of the purchase transaction
+                purchase[currency]:
+                  description: Currency of the purchase transaction in ISO 4217 format. For example USD,
+                    EUR
+                purchase[status]:
+                  description: 'Status of purchases of the product, please use only the following status:
+                    add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled,
+                    no_show, no_paid, check_in, check_out, reserved, confirmed'
+                purchase[redeem_coupon_code]:
+                  description: Coupon code used in the purchase
+                purchase[name]:
+                  description: Name of the purchase transaction
+                purchase[description]:
+                  description: Description of the purchase transaction
+                purchase[Purchase custom field]:
+                  description: 'You can create Purchase custom field with a specific type and use it within
+                    your API request: ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - origin
+              - purchase[UUID]
+              - purchase[transaction_code]
+              - purchase[price]
+              - purchase[currency]
+            example:
+              origin: PMS
+              options:
+                email_validation:
+                  validate: true
+                  create_if_invalid: true
+                  create_if_no_credit: true
+                webhook:
+                  url: https://xxxxxx.xxx
+                  contacts_extra_fields:
+                  - name_first
+                  purchase_extra_fields:
+                  - price
+              contacts:
+              - email: '[email protected]'
+                name_first: Jhon
+                name_last: Doe
+                user_id: '[email protected]'
+                born_date: '1990-01-01T00:00:00Z'
+                language: EN
+                country: Germany
+                city: Berlin
+                gender: male
+              purchase:
+                transaction_code: transaction_code_xxxx
+                currency: USD
+                price: 340
+                product_uuid: uuid_product_xxxxx
+                status: check_in
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: xxxxxxxxxxxxxxxxxxxxxxxx
+                number_of_contacts: 1
+                number_of_purchase: 1
+                validate_emails: true
+                contacts_extra_fields:
+                - name_first
+                purchase_extra_fields:
+                - price
+                webhook_url: https://xxxxxx.xxx
+                status: queued
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /account/{account_id}/sync_data/{id}:
+    get:
+      operationId: showSyncData
+      summary: Show — Sync Data
+      tags:
+      - Sync Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/sync_data/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: SyncData ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: xxxxxxxxxxxxxxxxxxxxxxxx
+                number_of_contacts: 1
+                number_of_purchase: 1
+                validate_emails: true
+                contacts_extra_fields:
+                - name_first
+                purchase_extra_fields:
+                - price
+                webhook_url: https://xxxxxx.xxx
+                status: queued
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact:
+    post:
+      operationId: createContact
+      summary: Create — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/create
+      x-source-path: /v2/account/{account_id}/contact/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  description: Contact associated device_id
+                name_first:
+                  description: Name of the contact
+                name_last:
+                  description: Last name of the contact
+                email:
+                  description: Email of the contact
+                phone_countrycode:
+                  description: Country code of the contact phone
+                phone_number:
+                  description: Phone number without country code of the contact
+                phone:
+                  description: Full phone number with country code of the contact
+                city:
+                  description: City of the contact
+                country:
+                  description: Country of the contact
+                region:
+                  description: Region of the contact
+                zip:
+                  description: Zip code of the contact
+                full_address:
+                  description: Address of the contact
+                born_date:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gender:
+                  description: Gender of the contact (MALE or FEMALE)
+                language:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                user_id:
+                  description: Unique identifier of contact in your backend
+                facebook_id:
+                  description: Facebook id of the contact
+                facebook_friends:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                google_id:
+                  description: Google+ id of the contact
+                twitter_id:
+                  description: Twitter id of the contact
+                twitter_followers:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                gdpr_date:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                last_latitude:
+                  type: number
+                  description: 'Last GPS latitude, Number, example: 27.994401'
+                last_longitude:
+                  type: number
+                  description: 'Last GPS longitude, Number, example: -81.726896'
+                '[custom field]':
+                  description: You can create a custom field and use in every contact, only add parameter
+                    in the json with the name of custom ( no label)
+                list_subscriptions[list_id]:
+                  description: Id of audience list
+                list_subscriptions[subscribed]:
+                  type: boolean
+                  description: If true, subscribe in this list
+                gdpr_marketing_consent:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                gdpr_accept_terms:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                gdpr_remote_ip:
+                  description: 'String type: Contact IP when accepted GDPR'
+                email_validation:
+                  description: Json with email_validation parameters
+                email_validation[validate]:
+                  type: boolean
+                  description: 'Boolean, if true, validate contact Email, Default: false'
+                email_validation[create_if_invalid]:
+                  type: boolean
+                  description: 'Boolean: If true, the contact contact will be created if Email is not
+                    valid, Default: false'
+                email_validation[create_if_no_credit]:
+                  type: boolean
+                  description: 'Boolean: If true, create contact if the account hasn''t credit for validation,
+                    Default: false'
+            example:
+              name_first: John
+              name_last: Doe
+              email: '[email protected]'
+              phone_countrycode: '44'
+              phone_number: '7712345678'
+              tags:
+              - tag1
+              - tag2
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listContact
+      summary: List — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/list
+      x-source-path: /v2/account/{account_id}/contact/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Contact user_id'
+      - name: device_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Contact associated device_id'
+      - name: name_first
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Name of the contact'
+      - name: name_last
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Last name of the contact'
+      - name: email
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Email fo the contact'
+      - name: phone_countrycode
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Country code of the contact phone'
+      - name: phone_number
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Phone number without country code of the contact'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'limit of number contacts returns, default: 200'
+      - name: contact_id_from
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Contact id to start the list
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'creation_date order asc or desc, default: asc'
+      responses:
+        '200':
+          description: Successful response
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/bulk:
+    post:
+      operationId: createBulkContact
+      summary: Create Bulk — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/create_bulk
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts:
+                  description: Array of contact data. Maximum of 5000 contacts per request.
+                match_contact_user_id:
+                  type: boolean
+                  description: 'If true, update the contact who have this user_id on the Cendyn CRM platform,
+                    else create a new one. By default: false'
+                webhook_url:
+                  description: A URL designated to receive notifications or data via webhook transmissions.
+                validate_emails:
+                  type: boolean
+                  description: 'If true, validate all contact´s emails of the bulk. This service has an
+                    extra cost and will use credits of your Pushtech account. If not enought credits the
+                    import will be processed without emails validation. By default: false'
+                contacts_webhook_extra_fields:
+                  description: 'Array that contain extra fields needed to be sent by the webhook. By default
+                    it is sent by the webhook the following fields: _id, user_id, email, phone_countrycode,
+                    phone_number'
+                contacts[device_id]:
+                  description: Contact associated device_id
+                contacts[name_first]:
+                  description: Name of the contact
+                contacts[name_last]:
+                  description: Last name of the contact
+                contacts[email]:
+                  description: Email of the contact
+                contacts[phone_countrycode]:
+                  description: Country code of the contact phone
+                contacts[phone_number]:
+                  description: Phone number without country code of the contact
+                contacts[phone]:
+                  description: Full phone number with country code of the contact
+                contacts[city]:
+                  description: City of the contact
+                contacts[country]:
+                  description: Country of the contact
+                contacts[region]:
+                  description: Region of the contact
+                contacts[zip]:
+                  description: Zip code of the contact
+                contacts[full_address]:
+                  description: Address of the contact
+                contacts[born_date]:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gender]:
+                  description: Gender of the contact (MALE or FEMALE)
+                contacts[language]:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                contacts[user_id]:
+                  description: Unique identifier of contact in your backend
+                contacts[facebook_id]:
+                  description: Facebook id of the contact
+                contacts[facebook_friends]:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                contacts[google_id]:
+                  description: Google+ id of the contact
+                contacts[twitter_id]:
+                  description: Twitter id of the contact
+                contacts[twitter_followers]:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                contacts[tags]:
+                  description: Array containing tags for this contact
+                contacts[list_subscriptions[list_id]]:
+                  description: Id of audience list
+                contacts[list_subscriptions[subscribed]]:
+                  type: boolean
+                  description: If true, subscribe from this list
+                contacts[channel_subscriptions[channel]]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                contacts[channel_subscriptions[blacklisted]]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                contacts[gdpr_accept_terms]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                contacts[gdpr_marketing_consent]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                contacts[gdpr_date]:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gdpr_remote_ip]:
+                  description: 'String type: Contact IP when accepted GDPR'
+                contacts[[custom field]]:
+                  description: You can create a custom field and use in every contact, only add parameter
+                    in the json with the name of custom (no label)
+              required:
+              - contacts
+            example:
+              webhook_url: https://requestb.in/qxvaw0qx
+              match_contact_user_id: false
+              validate_emails: false
+              contacts_webhook_extra_fields:
+              - name_first
+              contacts:
+              - name_first: John
+                name_last: Doe
+                email: '[email protected]'
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+              - name_first: John
+                name_last: Doe
+                email: '[email protected]'
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                bulk:
+                  _id: 550aac3da096734ce5000001
+                  number_of_contacts: 2
+                  match_contact_user_id: false
+                  validate_emails: false
+                  contacts_webhook_extra_fields:
+                  - name_first
+                  webhook_url: https://requestb.in/qxvaw0qx
+                  status: queue
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/bulk/{bulk_id}:
+    get:
+      operationId: getBulkContact
+      summary: Get Bulk — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/get_bulk
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: bulk_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Bulk id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                bulk:
+                  _id: 550aac3da096734ce5000001
+                  number_of_contacts: 2
+                  match_contact_user_id: false
+                  validate_emails: false
+                  contacts_webhook_extra_fields:
+                  - name_first
+                  webhook_url: https://requestb.in/qxvaw0qx
+                  status: queue
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/{contact_id}:
+    get:
+      operationId: showContact
+      summary: Show — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be showed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateContact
+      summary: Update — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  description: Contact associated device_id
+                name_first:
+                  description: Name of the contact
+                name_last:
+                  description: Last name of the contact
+                email:
+                  description: Email fo the contact
+                phone_countrycode:
+                  description: Country code of the contact phone
+                phone_number:
+                  description: Phone number without country code of the contact
+                phone:
+                  description: Full phone number with country code of the contact
+                city:
+                  description: City of the contact
+                country:
+                  description: Country of the contact
+                region:
+                  description: Region of the contact
+                zip:
+                  description: Zip code of the contact
+                full_address:
+                  description: Address of the contact
+                born_date:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gender:
+                  description: Gender of the contact (MALE or FEMALE)
+                language:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                user_id:
+                  description: Unique identifier of contact in your backend
+                facebook_id:
+                  description: Facebook id of the contact
+                facebook_friends:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                google_id:
+                  description: Google+ id of the contact
+                twitter_id:
+                  description: Twitter id of the contact
+                twitter_followers:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                tags:
+                  description: Array containing tags for this contact
+                last_latitude:
+                  type: number
+                  description: 'Last GPS latitude, Number, example: 27.994401'
+                last_longitude:
+                  type: number
+                  description: 'Last GPS longitude, Number, example: -81.726896'
+                '[custom field]':
+                  description: You can create a custom field and use in every contact, only add parameter
+                    in the json with the name of custom ( no label)
+                list_subscriptions[list_id]:
+                  description: Id of audience list
+                list_subscriptions[subscribed]:
+                  type: boolean
+                  description: If true, subscribe in this list
+                channel_subscriptions[channel]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                channel_subscriptions[blacklisted]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                gdpr_marketing_consent:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                gdpr_accept_terms:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                gdpr_date:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gdpr_remote_ip:
+                  description: 'String type: Contact IP when accepted GDPR'
+            example:
+              name_first: John
+              name_last: Doe
+              email: '[email protected]'
+              phone_countrycode: '44'
+              phone_number: '7712345678'
+              tags:
+              - tag1
+              - tag2
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteContact
+      summary: Delete — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be deleted
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/{contact_id}/email_validation:
+    get:
+      operationId: emailValidationContact
+      summary: Email validation — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/email_validation
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact for the email validation
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                email_valid: true
+                last_email_verified: '2020-06-16T08:25:03.230+00:00'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/custom_fields:
+    post:
+      operationId: createContactCustomFields
+      summary: Create — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                type:
+                  type: number
+                  description: 'Custom field type [ boolean, date, number, string, selectable_options].
+                    By default is: string'
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+              required:
+              - name
+              - label
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+              type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listContactCustomFields
+      summary: List — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: boolean
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: number
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/custom_fields/{custom_id}:
+    put:
+      operationId: updateContactCustomFields
+      summary: Update — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteContactCustomFields
+      summary: Delete — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/company:
+    post:
+      operationId: createCompany
+      summary: Create — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/create
+      x-source-path: /v2/account/{account_id}/company/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the company
+                about_us:
+                  description: About of the company
+                annual_revenue:
+                  description: Annual revenue of the company
+                close_date:
+                  description: Close date of the company
+                url:
+                  description: The webpage url of the company phone
+                street:
+                  description: Street of the company
+                city:
+                  description: City of the company
+                country:
+                  description: Country of the company in ISO-2
+                zip_code:
+                  description: Zip code of the company
+                description:
+                  description: Description of the company
+                fax:
+                  type: number
+                  description: Number of fax of company
+                email:
+                  description: Email of the company
+                industry:
+                  description: Industry type of the company
+                is_public:
+                  description: This company is a public company?
+                number_of_employees:
+                  type: number
+                  description: Number of employees of the company
+                phone_number:
+                  description: Phone number without country code of the company
+                phone_countrycode:
+                  description: Phone country code of the company
+                time_zone:
+                  description: Time zone of the company
+                year_founded:
+                  description: Year founded of the company
+                facebook_page:
+                  description: Facebook page of the company
+                google_plus_page:
+                  description: Google plus page of the company
+                linkedin_page:
+                  description: Linkedin page of the company
+                twitter_page:
+                  description: Twitter page of the company
+                '[custom field]':
+                  description: You can create a custom field to use in every company. Only add the parameter
+                    in the json with the name of custom field (no label)
+              required:
+              - name
+            example:
+              name: Google
+              url: https://www.google.es
+              email: '[email protected]'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listCompany
+      summary: List — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/list
+      x-source-path: /v2/account/{account_id}/company/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company name'
+      - name: email
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company email'
+      - name: phone_number
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company phone number'
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company url'
+      - name: industry
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company industry'
+      - name: country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company country'
+      - name: street
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company street'
+      - name: zip_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company zip code'
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company contact_id'
+      - name: '[custom field]'
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company custom field : https://www.cendyncrm.com/settings/company_custom_fields'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                companies:
+                - id: 550aac3da096734ce5000001
+                  name: Google
+                  url: https://www.google.es
+                  email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/company/{company_id}:
+    get:
+      operationId: showCompany
+      summary: Show — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be showed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateCompany
+      summary: Update — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the company
+                about_us:
+                  description: About of the company
+                annual_revenue:
+                  description: Annual revenue of the company
+                close_date:
+                  description: Close date of the company
+                url:
+                  description: The webpage url of the company phone
+                street:
+                  description: Street of the company
+                city:
+                  description: City of the company
+                country:
+                  description: Country of the company in ISO-2
+                zip_code:
+                  description: Zip code of the company
+                description:
+                  description: Description of the company
+                fax:
+                  type: number
+                  description: Number of fax of company
+                email:
+                  description: Email of the company
+                industry:
+                  description: Industry type of the company
+                is_public:
+                  description: This company is a public company?
+                number_of_employees:
+                  type: number
+                  description: Number of employees of the company
+                phone_number:
+                  description: Phone number without country code of the company
+                phone_countrycode:
+                  description: Phone country code of the company
+                time_zone:
+                  description: Time zone of the company
+                year_founded:
+                  description: Year founded of the company
+                facebook_page:
+                  description: Facebook page of the company
+                google_plus_page:
+                  description: Google plus page of the company
+                linkedin_page:
+                  description: Linkedin page of the company
+                twitter_page:
+                  description: Twitter page of the company
+                '[custom field]':
+                  description: You can create a custom field to use in every company. Only add the parameter
+                    in the json with the name of custom field (no label)
+            example:
+              name: Google
+              url: https://www.google.es
+              email: '[email protected]'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteCompany
+      summary: Delete — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be deleted
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/company_custom_fields:
+    post:
+      operationId: createCompanyCustomFields
+      summary: Create — Company custom fields
+      tags:
+      - Company custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company_custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                type:
+                  type: number
+                  description: 'Custom field type [ boolean, date, number, string, selectable_options].
+                    By default is: string'
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+              required:
+              - name
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the company facebook id
+              type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the company facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listCompanyCustomFields
+      summary: List — Company custom fields
+      tags:
+      - Company custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company_custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: boolean
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: number
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/company_custom_fields/{custom_id}:
+    put:
+      operationId: updateCompanyCustomFields
+      summary: Update — Company custom fields
+      tags:
+      - Company custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company_custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the company facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the company facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteCompanyCustomFields
+      summary: Delete — Company custom fields
+      tags:
+      - Company custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company_custom_fields/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the company facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/campaigns/{campaign_id}:
+    get:
+      operationId: showCampaigns
+      summary: Show — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the campaign
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                campaign:
+                  id: 61f25c46d1152010651ddd73
+                  name: Thienphuc_Sc
+                  created_at: '2022-01-27T08:48:06.960Z'
+                  updated_at: '2022-01-27T09:10:57.821Z'
+                  description: Thienphuc_Sc
+                  status: completed
+                  schedule_type: scheduled
+                  time_zone: Hanoi
+                  start_at: '2022-01-27T16:05:00.000Z'
+                  filters:
+                  - id: 5e8456aaf703666bc9000009
+                    name: danang
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 1
+                      clicked: 1
+                      unsubscribed: 1
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/campaigns:
+    get:
+      operationId: listCampaigns
+      summary: List — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/list
+      x-source-path: /v2/account/{account_id}/campaigns/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: status possible values [draft, scheduled, inprogress, completed, ongoing,
+          paused]'
+      - name: schedule_type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: schedule_type possible values [now, scheduled, automation_trigger, automation_cron]'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'limit of number campaigns returns, default: 200'
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'creation_date order asc or desc, default: desc'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                campaigns:
+                - id: 61fb9d11d11520261bb5436c
+                  name: Cai_Im1
+                  created_at: '2022-02-03T09:14:57.188Z'
+                  updated_at: '2022-02-03T09:26:46.953Z'
+                  description: Cai_Im1
+                  status: completed
+                  schedule_type: now
+                  time_zone: Jakarta
+                  send_date: '2022-02-03T09:19:06.330Z'
+                  filters:
+                  - id: 5e53ee3bf703664f9e000008
+                    name: dantoc
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 0
+                      clicked: 0
+                      unsubscribed: 0
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+                - id: 61fb9c65d11520261bb54344
+                  name: Cai_Im
+                  created_at: '2022-02-03T09:12:05.906Z'
+                  updated_at: '2022-02-03T09:18:02.837Z'
+                  description: Cai_Im
+                  status: completed
+                  schedule_type: now
+                  time_zone: Jakarta
+                  send_date: '2022-02-03T09:12:11.596Z'
+                  filters:
+                  - id: 5e53ee3bf703664f9e000008
+                    name: dantoc
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 0
+                      clicked: 0
+                      unsubscribed: 0
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/campaigns/{campaign_id}/message/contact/{contact_id}:
+    get:
+      operationId: previewMessageCampaigns
+      summary: Preview message — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/preview_message
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the campaign
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the contact
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                message:
+                  campaign_id: 58ef92a5edb7aa101c00005b
+                  contact_id: 58ef468dedb7aa5131000034
+                  channel: EMAIL
+                  delivery_id: 58ef92b4edb7aa3947000002
+                  template_data:
+                    sender: test <[email protected]>
+                    content: <html><body></body></html>
+                    template_email_id: 58bee1f5edb7aa6e5700000b
+                    content_template_email_id: null
+                    reply_to: ''
+                    subject: test
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/products:
+    post:
+      operationId: createProduct
+      summary: Create — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/create
+      x-source-path: /v2/account/{account_id}/products/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                UUID:
+                  description: Unique identifier of the product
+                name:
+                  description: Name of the product
+                price:
+                  description: Price of the product
+                currency:
+                  description: Currency of the product
+                description:
+                  description: Description of the product
+                url:
+                  description: The external link of the product
+                image_url:
+                  description: The external image link of the product
+                '''Your variable product''':
+                  description: 'You can create a variable product and use it within your API request:
+                    ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - UUID
+              - name
+              - price
+              - currency
+            example:
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+              url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+              image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listProduct
+      summary: List — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/list
+      x-source-path: /v2/account/{account_id}/products/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Unique identifier of the product
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Name of the product
+      - name: price
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Price of the product
+      - name: currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Currency of the product
+      - name: description
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Description of the product
+      - name: store
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Store of the product
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The external link of the product
+      - name: image_url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The external image link of the product
+      - name: updated_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: updated since inclusive
+      - name: updated_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: updated until inclusive
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: max number of products returned, default max set to 200
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: creation desc or asc order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                products:
+                - UUID: '3210938120313912312'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/products/{UUID}:
+    get:
+      operationId: showProduct
+      summary: Show — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateProduct
+      summary: Update — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the product
+                price:
+                  description: Price of the product
+                currency:
+                  description: Currency of the product
+                description:
+                  description: Description of the product
+                url:
+                  description: The external link of the product
+                image_url:
+                  description: The external image link of the product
+                '''Your variable product''':
+                  description: 'You can create a variable product and use it within your API request:
+                    ''https://www.cendyncrm.com/settings/product_custom_fields'''
+            example:
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+              url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+              image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteProduct
+      summary: Delete — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  store: web
+                  type: smartphone
+                  color: gold
+                  size: 5,5 inch
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/product_custom_fields:
+    post:
+      operationId: createProductCustomFields
+      summary: Create — Product custom fields
+      tags:
+      - Product custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product_custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                type:
+                  type: number
+                  description: 'Custom field type [ boolean, date, number, string, selectable_options].
+                    By default is: string'
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+              required:
+              - name
+              - label
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+              type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listProductCustomFields
+      summary: List — Product custom fields
+      tags:
+      - Product custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product_custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: boolean
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: number
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/product_custom_fields/{product_custom_id}:
+    put:
+      operationId: updateProductCustomFields
+      summary: Update — Product custom fields
+      tags:
+      - Product custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product_custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: product_custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteProductCustomFields
+      summary: Delete — Product custom fields
+      tags:
+      - Product custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product_custom_fields/delete
+      x-source-path: /v2/account/{account_id}/product_custom_fields/{custom_id}
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: product_custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: custom_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/coupon_lists:
+    post:
+      operationId: createCouponLists
+      summary: Create — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                codes:
+                  description: 'Array with codes, Max: 500'
+                low_limit_notification:
+                  description: Send notification email if only x coupons left
+                notification_email:
+                  description: Email to send notification.
+              required:
+              - name
+              - codes
+            example:
+              name: Coupon list
+              codes:
+              - code_1
+              - code_2
+              low_limit_notification: 10
+              notification_email: '[email protected]'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listCouponLists
+      summary: List — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Page to retrieve
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Items per page: Max:100 , default:50'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_lists:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+                - _id: 5853d8c2edb7aacab9000046
+                  name: Coupon list 2
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+                - _id: 5853d8c2edb7aacab9000047
+                  name: Coupon list 3
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/coupon_lists/{coupon_list_id}:
+    get:
+      operationId: showCouponLists
+      summary: Show — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateCouponLists
+      summary: Update — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codes:
+                  description: Array with codes, Max:500
+                low_limit_notification:
+                  description: Send notification email if only x coupons left
+                notification_email:
+                  description: Email to send notification.
+            example:
+              codes:
+              - code_4
+              - code_5
+              low_limit_notification: 10
+              notification_email: '[email protected]'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteCouponLists
+      summary: Delete — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/coupon_lists/redeem:
+    put:
+      operationId: redeemCouponLists
+      summary: Redeem — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/redeem
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  description: Coupon code redeemed
+                contact_id:
+                  description: Contact ID
+                campaign_id:
+                  description: Campaign ID
+              required:
+              - code
+            example:
+              code: code_4
+              contact_id: ':contact_id:'
+              campaign_id: ':campaign_id:'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 1
+                  redeem_coupons: 1
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/{contact_id}/purchases:
+    post:
+      operationId: createPurchase
+      summary: Create — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaign_id:
+                  description: Id of the campaign
+                products[UUID]:
+                  description: Universally unique identifier (UUID) of the product
+                products[status]:
+                  description: 'Status of purchases of the product, please use only the following status:
+                    add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled,
+                    no_show, no_paid, check_in, check_out, reserved, confirmed'
+                products[transaction_code]:
+                  description: Transaction code of the product purchase of your backend
+                products[redeem_coupon_code]:
+                  description: Coupon code used in the purchase
+                products[name]:
+                  description: Name of the purchase transaction
+                products[description]:
+                  description: Description of the purchase transaction
+                products[price]:
+                  description: Price of the purchase transaction
+                products[currency]:
+                  description: Currency of the purchase transaction
+                products[Your variable product]:
+                  description: 'You can create a variable product and use it within your API request:
+                    ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - products[UUID]
+              - products[price]
+              - products[currency]
+            example:
+              campaign_id: 57680042edb7aad202000005
+              products:
+              - status: purchase
+                transaction_code: 4230923jda023230
+                UUID: '3210938120313912312'
+                name: Iphone6
+                price: 748.45
+                currency: EUR
+                description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2016-06-22T10:37:34Z'
+                  id: 576a6a6eedb7aab9c2000006
+                  status: purchase
+                  contact_id: 57680042edb7aad202000001
+                  campaign_id: 57680042edb7aad202000005
+                  product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases/{purchase_id}:
+    put:
+      operationId: updatePurchase
+      summary: Update — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: purchase_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the purchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaign_id:
+                  description: Id of the campaign
+                status:
+                  description: 'Status of the purchase. Only the following status are allowed: add_cart,
+                    purchase, remove_cart, product_view, product_refund, purchase_failed, canceled, no_show,
+                    no_paid, check_in, check_out, reserved, confirmed'
+                redeem_coupon_code:
+                  description: Coupon code used in the purchase
+                transaction_code:
+                  description: Transaction code of the purchase of your backend
+                name:
+                  description: Name of the purchase transaction
+                description:
+                  description: Description of the purchase transaction
+                price:
+                  description: Price of the purchase transaction
+                currency:
+                  description: Currency of the purchase transaction
+                error_message:
+                  description: Custom error message if purchase failed
+            example:
+              campaign_id: 57680042edb7aad202000005
+              status: purchase
+              transaction_code: 4230923jda023230
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                created_at: '2016-06-22T10:37:34Z'
+                id: 576a6a6eedb7aab9c2000006
+                status: purchase
+                contact_id: 57680042edb7aad202000001
+                campaign_id: 57680042edb7aad202000005
+                product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deletePurchase
+      summary: Delete — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: purchase_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the purchase
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                created_at: '2016-06-22T10:37:34Z'
+                id: 576a6a6eedb7aab9c2000006
+                status: purchase
+                contact_id: 57680042edb7aad202000001
+                campaign_id: 57680042edb7aad202000005
+                product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases:
+    get:
+      operationId: listPurchase
+      summary: List — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: External contact user ID'
+      - name: product_UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Product UUID'
+      - name: transaction_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Transaction code'
+      - name: currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Currency in ISO 4217 Code'
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Status, please use only the following status: add_cart, purchase, remove_cart,
+          product_view, product_refund, purchase_failed, canceled, no_show, no_paid, check_in, check_out,
+          reserved, confirmed'
+      - name: product_custom_field
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Any product custom field https://www.cendyncrm.com/settings/product_custom_fields'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2020-08-28T10:29:19.250Z'
+                  updated_at: '2020-08-28T10:30:28.395Z'
+                  id: 5f48dc7ef0fcef97a1d7074d
+                  status: purchase
+                  contact_id: 5f437b5ff0fcef60b273c7b9
+                  campaign_id: 5b8f9ff9f70366eff600000b
+                  transaction_code: 4230923jda023230
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  price_EUR: 748.45
+                  product_UUID: '3210938120313912312'
+                  check_in: '2020-09-27T22:00:00.000Z'
+                  check_out: '2020-10-27T23:00:00.000Z'
+                  hotel_id: '23'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases/delete_group:
+    delete:
+      operationId: deleteGroupPurchase
+      summary: Delete Group — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/delete_group
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: External contact user ID'
+      - name: product_UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Product UUID'
+      - name: transaction_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Transaction code'
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Pushtech Contact ID'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2020-08-28T10:29:19.250Z'
+                  updated_at: '2020-08-28T10:30:28.395Z'
+                  id: 5f48dc7ef0fcef97a1d7074d
+                  status: purchase
+                  contact_id: 5f437b5ff0fcef60b273c7b9
+                  campaign_id: 5b8f9ff9f70366eff600000b
+                  transaction_code: 4230923jda023230
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  price_EUR: 748.45
+                  product_UUID: '3210938120313912312'
+                  check_in: '2020-09-27T22:00:00.000Z'
+                  check_out: '2020-10-27T23:00:00.000Z'
+                  hotel_id: '23'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data/{uuid}/add_language:
+    put:
+      operationId: addLanguageHotelData
+      summary: Add language — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/add_language
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  description: 'Language of the hotel in ISO-2 format, Example: ES'
+                data:
+                  description: JSON with custom fields for hotel data
+                data[Your custom hotel data field]:
+                  description: 'You can create a custom field hotel data and use it within your API request:
+                    ''https://www.cendyncrm.com/settings/hotel_data_custom_fields'''
+              required:
+              - language
+              - data
+              - data[Your custom hotel data field]
+            example:
+              language: FR
+              data:
+                hotel_name: Nom de l'hôtel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                    FR: Nom de l'hôtel
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data:
+    post:
+      operationId: createHotelHotelData
+      summary: Create hotel — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  description: Unique identifier for hotel
+                name:
+                  description: Hotel Name
+                items:
+                  description: Array with data for different languages
+                items[language]:
+                  description: 'Language of the hotel in ISO-2 format, Example: ES'
+                items[data]:
+                  description: JSON with custom fields for hotel data
+                items[data][Your custom hotel data field]:
+                  description: 'You can create a custom field hotel data and use it within your API request:
+                    ''https://www.cendyncrm.com/settings/hotel_data_custom_fields'''
+              required:
+              - uuid
+              - name
+              - items
+              - items[language]
+              - items[data]
+            example:
+              uuid: hotel_2
+              name: Hotel 2
+              items:
+              - language: ES
+                data:
+                  hotel_name: Nombre del hotel
+              - language: DE
+                data:
+                  hotel_name: Name des Hotels
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listHotelData
+      summary: List — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotels:
+                - name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                - name: Hotel 1
+                  uuid: hotel_1
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data/{uuid}:
+    delete:
+      operationId: deleteHotelData
+      summary: Delete — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: UUID of the hotel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: showHotelData
+      summary: Show — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                    FR: Nom de l'hôtel
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data/{uuid}/remove_language:
+    delete:
+      operationId: removeLanguageHotelData
+      summary: Remove language — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/remove_language
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      - name: language
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'Language of the hotel in ISO-2 format, Example: ES'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data_custom_fields:
+    post:
+      operationId: createHotelDataCustomFields
+      summary: Create — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                is_url:
+                  description: 'If the custom field is a url,set to: true'
+              required:
+              - name
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the hotel data facebook id
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listHotelDataCustomFields
+      summary: List — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                  is_url: false
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: string
+                  is_url: true
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: string
+                  is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data_custom_fields/{custom_id}:
+    put:
+      operationId: updateHotelDataCustomFields
+      summary: Update — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                is_url:
+                  description: 'If the custom field is an url, set it to: true'
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the hotel data facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteHotelDataCustomFields
+      summary: Delete — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/email/deliveries:
+    post:
+      operationId: sendEmailDeliveries
+      summary: Send Email — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_email
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization
+          process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  description: Parameter containing the name of who sent the message.
+                sender_email:
+                  description: Parameter containing the email of who sent the message.
+                subject_holder:
+                  description: 'Parameter containing the subject of the message. This message can have
+                    interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning
+                    %{name}".'
+                message_holder:
+                  description: 'Parameter containing the content of the message. This message can have
+                    interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning
+                    %{name}".'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains two key-value
+                    elements, email and replacements. The email value contains the destination of the
+                    email. The replacements contains a hash with the values of the interpolation''s containers.
+                    Example: [{ email: "[email protected]", replacements: {"name": "John"} }]'
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter
+                    start_at
+                start_at:
+                  description: Time when to send the email
+              required:
+              - sender
+              - sender_email
+              - subject_holder
+              - message_holder
+              - deliveries
+              - start_now
+            example:
+              sender: John Doe
+              sender_email: '[email protected]'
+              subject_holder: Hello %{name}
+              message_holder: <html><h1>Hey! This is a test %{name} %{surname}</h1></html>
+              start_now: true
+              deliveries:
+              - email: '[email protected]'
+                replacements:
+                  name: Jane
+                  surname: Doe
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - valid: true
+                  delivery_id: 550ab6a1a096734ce5000002
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/push/deliveries:
+    post:
+      operationId: sendPushDeliveries
+      summary: Send Push — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_push
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization
+          process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                app_id:
+                  description: Your app unique identifier to access the API. This parameter is part of
+                    the authorization process
+                subject:
+                  description: Title of the push notification that will appear in the notification bar
+                    of the user's device.
+                message_holder:
+                  description: 'parameter containing the content of the message. this message can have
+                    interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning
+                    %{name}".'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains two key-value
+                    elements, device_id and replacements . The device_id, user_id or contact_id that send
+                    the delivery. The replacements contains a hash with the values of the interpolation''s
+                    containers. Example: [{ device_id: "550ab6a1a096734ce5000002", replacements: {"name":
+                    "Your Name"} }]'
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter
+                    start_at
+                send_all_devices:
+                  type: boolean
+                  description: If true, send all contact's devices, else send the last contact's device.
+                    Only available when use 'user_id' or 'contact_id'
+                start_at:
+                  type: string
+                  format: date-time
+                  description: Parameter containing the date when the deliveries will be send. the date
+                    has to been formated following the ISO 8601. If the date introduced is before from
+                    now your deliveries will be send instantly
+                alert:
+                  description: Parameter to set the title of the push notification. If it is blank, then
+                    we will send a silent push notification. (Only iOS)
+                sound:
+                  description: Parameter to specify the file sound to play when a push notification is
+                    received. (Only iOS)
+                url:
+                  description: Parameter to specify rich content in the push notification
+                thumbnail_url:
+                  description: To send a big picture notification
+                category_push:
+                  description: 'Interactive Notifications with Notification Actions, only the following
+                    strings are accepted: ''CATEGORY_OK'', ''CATEGORY_EDIT'', ''CATEGORY_FIND'', ''CATEGORY_LIKE_DISLIKE'',
+                    ''CATEGORY_LAUNCH'', ''CATEGORY_REMIND'', ''CATEGORY_DELETE'', ''CATEGORY_FORBID'',
+                    ''CATEGORY_LIKE_FOLLOW'', ''CATEGORY_LIKE_SHARE'', ''CATEGORY_SHARE'', ''CATEGORY_SHOP'',
+                    ''CATEGORY_YES'', ''CATEGORY_ACCEPT'', ''CATEGORY_SEND'', ''CATEGORY_BUY'', ''CATEGORY_SAVE'''
+                badge:
+                  description: iOS only. The number to display as the badge of the app icon. If this property
+                    is absent, the badge is not changed. To remove the badge, set the value of this property
+                    to 0.
+                silent:
+                  description: 'iOS only. If true, means that when your app is launched in the background
+                    or resumed, application:didReceiveRemoteNotification:fetchCompletionHandler: is called.'
+                extra:
+                  description: Parameter to specify custom content that will be shown on delivery
+              required:
+              - app_id
+              - subject
+              - message_holder
+              - deliveries
+              - start_now
+            example:
+              app_id: '{{app_id}}'
+              subject: PushMsg
+              send_all_devices: true
+              url: https://www.cendyncrm.com
+              thumbnail_url: https://www.cendyncrm.com/assets/logo-light-daf5fc9918db1e811190d12aea30947d.png
+              category_push: CATEGORY_FIND
+              message_holder: Hello %{name}, this is a Push Notification
+              start_now: 'true'
+              alert: Hi %{name}
+              silent: false
+              deliveries:
+              - device_id: '{{device_id}}'
+                replacements:
+                  name: John
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - - valid: true
+                    delivery_id: 550ab6a1a096734ce5000002
+                    device_id: 5834114ff92ea112ad000001
+                  - valid: true
+                    delivery_id: 550ab6a1a096734ce5000003
+                    device_id: 5834167ff92ea112ad304059
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/sms/deliveries:
+    post:
+      operationId: sendSMSDeliveries
+      summary: Send SMS — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_sms
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization
+          process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  description: MAX 11 characters. Parameter containing the name of who sent the message.
+                message_holder:
+                  description: 'Parameter containing the content of the message. this message can have
+                    interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning
+                    %{name}"'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains key-value
+                    elements as phone number and replacements. Example: [{phone_number: "+447712345678",
+                    replacements: {"name": "Your name"}}]'
+                deliveries[phone_number]:
+                  description: The phone number value has to be formated following the standart E164.
+                deliveries[replacements]:
+                  description: The replacements contains a hash with the values of the interpolation's
+                    containers
+                deliveries[multiple]:
+                  type: boolean
+                  description: if true send multiple sms items for unicode message or long messages.By
+                    default set to false.
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter
+                    start_at.
+                start_at:
+                  type: string
+                  format: date-time
+                  description: Parameter containing the date when the deliveries will be send. the date
+                    has to been formated following the ISO 8601. If the date introduced is before from
+                    now your deliveries will be send instantly.
+              required:
+              - sender
+              - message_holder
+              - deliveries
+              - deliveries[phone_number]
+              - deliveries[replacements]
+              - start_now
+            example:
+              sender: CocaCola
+              message_holder: Hello %{name}, how are you?
+              start_now: true
+              deliveries:
+              - phone_number: '+447712345678'
+                replacements:
+                  name: John
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - valid: true
+                  delivery_id: 550ab6a1a096734ce5000002
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/delivery/{delivery_id}:
+    get:
+      operationId: showDeliveries
+      summary: Show — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization
+          process
+      - name: delivery_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: 'unique identifier of the Delivery you want to get all the information. This parameter
+          have to replace: delivery_id in the example of the call.'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                delivery:
+                  id: 54f97ac2a09673c4b5000001
+                  created_at: '2015-03-06T10:00:34Z'
+                  updated_at: '2015-03-06T10:00:42Z'
+                  channel: EMAIL
+                  status: sent
+                  refunded: false
+                  template_data:
+                    sender: John
+                    subject: Hey Jane!
+                    content: Hey! This is a test, Jane
+                  channel_data:
+                    '3': '[email protected]'
+                  price:
+                    amount: 0.01
+                    currency: €
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/deliveries:
+    get:
+      operationId: listDeliveries
+      summary: List — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization
+          process
+      - name: delivery_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'Unique identifier of the Delivery you want to get all the information. This parameter
+          have to replace: delivery_id in the example of the call.'
+      - name: app_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by app_id
+      - name: campaign_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by campaign_id
+      - name: channel
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by channel
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by status
+      - name: refunded
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by refunded
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by contact_id
+      - name: device_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by device_id
+      - name: created_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Created since inclusive
+      - name: created_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Created until inclusive
+      - name: updated_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Updated since inclusive
+      - name: updated_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Updated until inclusive
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Max number of deliveries returned, default max set to 200
+      - name: from_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Query deliveries after this delivery
+      - name: until_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Query deliveries before this delivery
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Creation DESC or ASC order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - delivery:
+                    id: 54f97ac2a09673c4b5000001
+                    created_at: '2015-03-06T10:00:34Z'
+                    updated_at: '2015-03-06T10:00:42Z'
+                    channel: EMAIL
+                    status: sent
+                    refunded: false
+                    template_data:
+                      sender: John
+                      subject: Hey Jane!
+                      content: Hey Jane! This is a test
+                    channel_data:
+                      '3': '[email protected]'
+                    price:
+                      amount: 0.01
+                      currency: €
+                - delivery:
+                    id: 54f97ac3a09673c4b5000003
+                    created_at: '2015-03-06T10:00:35Z'
+                    updated_at: '2015-03-06T10:00:44Z'
+                    channel: EMAIL
+                    status: sent
+                    refunded: false
+                    template_data:
+                      sender: John
+                      subject: Hey Jane!
+                      content: Hey Jane! This is a test
+                    channel_data:
+                      '3': '[email protected]'
+                    price:
+                      amount: 0.01
+                      currency: €
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/lists:
+    post:
+      operationId: createAudienceList
+      summary: Create — Audience List
+      tags:
+      - Audience List
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/list/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Account unique identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the list
+                description:
+                  description: Description of the list
+                visibility:
+                  description: Visibility of the list
+              required:
+              - name
+            example:
+              name: Project Ideas
+              description: List of project ideas
+              visibility: public
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: new_list_id
+                name: Project Ideas
+                description: List of project ideas
+                visibility: public
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listAudienceList
+      summary: List — Audience List
+      tags:
+      - Audience List
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/list/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Account unique identifier
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                lists:
+                - id: list1_id
+                  name: First List
+                  description: Description of the first list
+                  created_at: '2024-04-17T12:00:00Z'
+                  visibility: public
+                - id: list2_id
+                  name: Second List
+                  description: Description of the second list
+                  created_at: '2024-04-17T12:00:00Z'
+                  visibility: private
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/lists/{id}:
+    get:
+      operationId: showAudienceList
+      summary: Show — Audience List
+      tags:
+      - Audience List
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/list/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Account unique identifier
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: List unique identifier
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: list1_id
+                name: First List
+                description: Description of the first list
+                created_at: '2024-04-17T12:00:00Z'
+                visibility: public
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateAudienceList
+      summary: Update — Audience List
+      tags:
+      - Audience List
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/list/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Account unique identifier
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: List unique identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the list
+                description:
+                  description: Description of the list
+                visibility:
+                  description: Visibility of the list
+            example:
+              name: Updated List
+              description: Updated description
+              visibility: private
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: updated_list_id
+                name: Updated List
+                description: Updated description
+                visibility: private
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteAudienceList
+      summary: Delete — Audience List
+      tags:
+      - Audience List
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/list/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Account unique identifier
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: List unique identifier
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                message: List successfully deleted
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'

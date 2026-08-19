@@ -1,0 +1,147 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/push-cendyn-crm-openapi.yml
+docs: https://developers.cendyncrm.com/api/reference
+api: Cendyn CRM (PUSHTech) REST API
+note: >-
+  Entity graph derived from the derived OpenAPI: one entity per reference resource group, with
+  relationships read from id-reference fields in request bodies and query filters. The provider
+  publishes no component schemas, so entity attributes below are the documented parameter names
+  for each resource, and the objects are open — custom fields defined per account are sent as
+  additional top-level members (see conventions/push-conventions.yml).
+root:
+  name: Account
+  identifier: account_id
+  note: >-
+    Account is the tenancy root, not a manipulable resource — there is no create/update/delete
+    for it. Every one of the 67 documented operations is scoped under
+    /v{n}/account/{account_id}/, and account_id is a required path segment on all of them.
+    The only Account operation is a balance read.
+entities:
+- name: Account
+  operations: [currentBalanceAccount]
+  identifier: account_id
+  attributes: [balance, currency]
+  note: Read-only balance; credits are consumed by deliveries and by contact email validation.
+- name: Contact
+  operations: [createContact, createBulkContact, getBulkContact, showContact, updateContact, listContact, deleteContact, emailValidationContact]
+  identifier: _id
+  alternate_keys: [user_id, device_id, email, phone, facebook_id, google_id, twitter_id]
+  id_example: 550aac3da096734ce5000001
+  note: >-
+    The central entity of the platform. Carries identity, contact channels, GPS position, social
+    identifiers, GDPR consent state and list subscriptions. user_id is the caller's own backend
+    identifier and is the documented de-duplication key.
+- name: ContactCustomField
+  operations: [createContactCustomFields, updateContactCustomFields, listContactCustomFields, deleteContactCustomFields]
+  identifier: custom_id
+- name: Company
+  operations: [createCompany, showCompany, updateCompany, listCompany, deleteCompany]
+  identifier: company_id
+- name: CompanyCustomField
+  operations: [createCompanyCustomFields, updateCompanyCustomFields, listCompanyCustomFields, deleteCompanyCustomFields]
+  identifier: custom_id
+- name: Product
+  operations: [createProduct, showProduct, updateProduct, listProduct, deleteProduct]
+  identifier: UUID
+  note: Products are keyed by a UUID path segment rather than the Mongo-style _id used by Contact.
+- name: ProductCustomField
+  operations: [createProductCustomFields, updateProductCustomFields, listProductCustomFields, deleteProductCustomFields]
+  identifier: product_custom_id
+  note: >-
+    The reference names this path variable :product_custom_id on update and :custom_id on delete
+    for the same resource. Normalised to product_custom_id in the OpenAPI; x-source-path on the
+    affected operation records the published form.
+- name: HotelData
+  operations: [addLanguageHotelData, createHotelHotelData, deleteHotelData, listHotelData, removeLanguageHotelData, showHotelData]
+  identifier: uuid
+  note: >-
+    The hospitality-specific entity — the reason this is a vertical CRM rather than a generic
+    one. Carries per-language content, added and removed through dedicated operations.
+- name: HotelDataCustomField
+  operations: [createHotelDataCustomFields, updateHotelDataCustomFields, listHotelDataCustomFields, deleteHotelDataCustomFields]
+  identifier: custom_id
+- name: AudienceList
+  operations: [createAudienceList, showAudienceList, updateAudienceList, listAudienceList, deleteAudienceList]
+  identifier: id
+  note: Segmentation container; contacts join and leave through list_subscriptions on the Contact object.
+- name: Campaign
+  operations: [showCampaigns, listCampaigns, previewMessageCampaigns]
+  identifier: campaign_id
+  note: >-
+    Read-only over the API. Campaigns are authored in the Cendyn CRM manager UI; the API can list,
+    show and render a per-contact message preview but cannot create or send one.
+- name: Coupon
+  operations: [createCouponLists, showCouponLists, updateCouponLists, listCouponLists, deleteCouponLists, redeemCouponLists]
+  identifier: coupon_list_id
+  note: Redeem is a state transition (PUT /coupon_lists/redeem) rather than a resource write.
+- name: Purchase
+  operations: [createPurchase, updatePurchase, listPurchase, deletePurchase, deleteGroupPurchase]
+  identifier: purchase_id
+  note: >-
+    The e-commerce fact table. Created under a contact, then addressed at account level for
+    update and delete. deleteGroupPurchase is a bulk delete by filter.
+- name: Delivery
+  operations: [sendEmailDeliveries, sendPushDeliveries, sendSMSDeliveries, showDeliveries, listDeliveries]
+  identifier: delivery_id
+  note: >-
+    A single outbound message on one of three channels. Deliveries are the only operations that
+    consume account balance, and they are the operations with no idempotency contract.
+- name: SyncData
+  operations: [createSyncData, showSyncData]
+  identifier: id
+  note: >-
+    Bulk composite ingest — accepts contacts[] and purchase[] in one payload. The only resource
+    published WITHOUT a /v2 version prefix.
+relationships:
+- {from: Account, to: Contact, type: has_many, via: account_id}
+- {from: Account, to: Company, type: has_many, via: account_id}
+- {from: Account, to: Product, type: has_many, via: account_id}
+- {from: Account, to: HotelData, type: has_many, via: account_id}
+- {from: Account, to: AudienceList, type: has_many, via: account_id}
+- {from: Account, to: Campaign, type: has_many, via: account_id}
+- {from: Account, to: Coupon, type: has_many, via: account_id}
+- {from: Account, to: Delivery, type: has_many, via: account_id}
+- {from: Contact, to: AudienceList, type: has_many, via: 'list_subscriptions[list_id]', evidence: createContact requestBody}
+- {from: Contact, to: Purchase, type: has_many, via: contact_id, evidence: 'POST /v2/account/{account_id}/contact/{contact_id}/purchases'}
+- {from: Purchase, to: Product, type: has_many, via: 'products[UUID]', evidence: createPurchase requestBody}
+- {from: Purchase, to: Campaign, type: belongs_to, via: campaign_id, evidence: createPurchase requestBody}
+- {from: Delivery, to: Contact, type: belongs_to, via: contact_id, evidence: listDeliveries query filter}
+- {from: Delivery, to: Campaign, type: belongs_to, via: campaign_id, evidence: listDeliveries query filter}
+- {from: Delivery, to: App, type: belongs_to, via: app_id, evidence: sendPushDeliveries requestBody}
+- {from: Coupon, to: Contact, type: belongs_to, via: contact_id, evidence: redeemCouponLists requestBody}
+- {from: Coupon, to: Campaign, type: belongs_to, via: campaign_id, evidence: createCouponLists requestBody}
+- {from: Company, to: Contact, type: has_many, via: contact_id, evidence: listCompany query filter}
+- {from: Contact, to: ContactCustomField, type: has_many, via: custom field name}
+- {from: Company, to: CompanyCustomField, type: has_many, via: custom field name}
+- {from: Product, to: ProductCustomField, type: has_many, via: custom field name}
+- {from: HotelData, to: HotelDataCustomField, type: has_many, via: custom field name}
+- {from: SyncData, to: Contact, type: has_many, via: 'contacts[]', evidence: createSyncData requestBody}
+- {from: SyncData, to: Purchase, type: has_one, via: 'purchase[]', evidence: createSyncData requestBody}
+- {from: Campaign, to: Contact, type: references, via: contact_id, evidence: 'previewMessageCampaigns path /campaigns/{campaign_id}/message/contact/{contact_id}'}
+entities_referenced_but_not_exposed:
+- name: App
+  referenced_by: [sendPushDeliveries, listDeliveries]
+  via: app_id
+  note: >-
+    Push deliveries and delivery filters take an app_id, and the Web SDK is constructed with an
+    app_id / app_secret pair, but the REST reference publishes NO app resource — apps can only be
+    created and read in the manager UI. A real surface gap for an agent that needs to discover
+    which app to send to.
+- name: Device
+  referenced_by: [createContact, listDeliveries]
+  via: device_id
+  note: >-
+    device_id is settable on a contact and filterable on deliveries, but there is no device
+    resource. Devices are registered by the mobile/Web SDKs, not by the REST API.
+- name: Template
+  referenced_by: [webhook delivery events]
+  via: 'template[_id]'
+  note: >-
+    Delivery webhook payloads carry template[_id] and template[name], but no template resource is
+    published in the REST reference. See asyncapi/push-webhooks.yml.
+id_formats:
+- {entity: Contact, style: 24-char hex (MongoDB ObjectId), example: 550aac3da096734ce5000001}
+- {entity: Campaign, style: 24-char hex (MongoDB ObjectId), example: 5848408485216d13d100000a}
+- {entity: Product, style: UUID}
+- {entity: HotelData, style: UUID}

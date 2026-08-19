@@ -1,62 +1,104 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
-source: http://developers.pushtech.com/api/webhooks
+source: https://developers.cendyncrm.com/api/webhooks
+superseded_source: http://developers.pushtech.com/api/webhooks
+superseded_note: >-
+  The host this artifact was originally read from, developers.pushtech.com, no longer resolves
+  (NXDOMAIN as of 2026-08-13). Re-read in full from the successor portal at
+  developers.cendyncrm.com, which carries a substantially richer document than was captured in
+  the first round: per-group payload field dictionaries, worked JSON examples, subscriber status
+  code semantics, the exact retry schedule, and published signature-verification code.
 type: Webhooks
 api: Cendyn CRM (PUSHTech) REST API
+asyncapi_document: asyncapi/push-webhooks-asyncapi.yml
 delivery: HTTP POST callback to subscriber-configured URLs
-subscription: Configure callback URLs in the Webhooks section of the account manager.
-security:
-  auth_parameters:
-  - timestamp
-  - token
-  - account_id
-  signature:
-    header: Authorization
-    algorithm: HMAC-SHA256
-    description: Each webhook includes an Authorization header carrying an HMAC-SHA256 signature for verification.
+subscription:
+  mechanism: >-
+    Callback URLs are configured by hand in the Webhooks section of the API area of the Cendyn CRM
+    account manager. There is no subscription API — an agent cannot register, list or remove a
+    webhook endpoint programmatically.
+  granularity: >-
+    Endpoints are registered per event group: by channel for delivery messages, by type for
+    contact activities.
+subscriber_response_contract:
+  note: The status codes the provider reads back from the subscriber. This is the only documented status-code semantics on the entire surface.
+  codes:
+  - {status: 200, meaning: Success, retried: false}
+  - {status: 406, meaning: Rejected by the subscriber, retried: false}
+  - {status: any other, meaning: Failure, retried: true}
 retries:
   window: 4 hours
-  schedule: progressive interval
+  schedule: [5m, 5m, 10m, 10m, 30m, 1h, 2h]
   exceptions:
-  - Delivery events are not retried.
+  - Delivery-channel events are never retried, regardless of the response code.
+security:
+  common_body_parameters:
+  - {name: account_id, type: string, location: body, description: Your account ID}
+  - {name: timestamp, type: integer, location: body, description: Seconds since 1970-01-01}
+  - {name: token, type: string, location: body, description: Randomly generated string, length 50}
+  signature:
+    header: Authorization
+    type: string
+    encoding: hex digest
+    algorithm: HMAC-SHA256
+    signed_payload: concat(timestamp, token)
+    key: account secret key
+    verification: >-
+      Concatenate the timestamp and token body values, HMAC-SHA256 the result using the account
+      secret key, hex-encode it, and compare to the Authorization header. Optionally check the
+      timestamp is close to the current time to bound replay.
+    published_samples: [PHP, Python, Ruby]
+    note: >-
+      The signature covers only timestamp + token — it does NOT cover the event body. A valid
+      signature therefore proves the request came from Cendyn CRM but does not prove the payload
+      was not altered in transit. Subscribers should rely on TLS for body integrity and should
+      enforce a timestamp freshness window, which the docs describe as optional.
 event_groups:
 - id: activities
-  description: Contact interactions and behaviors.
-  events:
-  - event
-  - update
-  - custom
-  - open_app
-  - uninstall_app
-  - subscribe_push
-  - unsubscribe_push
-  - add_cart
-  - remove_cart
-  - product_view
-  - product_refund
-  - purchase_failed
-  - gps_location
-  - contact_status
+  description: Contact interactions and behaviours, emitted from the API, the SDKs or a campaign.
+  discriminator: type
+  events: [event, update, custom, open_app, uninstall_app, subscribe_push, unsubscribe_push, add_cart, remove_cart, product_view, product_refund, purchase_failed, gps_location, contact_status]
+  origins: [api, sdk, campaign]
+  event_types: [opened, delivered, clicked, unsubscribed, sent, failed]
+  payload_fields: [created_at, _id, origin, type, event_type, updated_field, updated_field_value, custom, custom_key, custom_value, old_status, current_status, 'contact[_id]', 'contact[user_id]', 'contact[device_id]', 'contact[name_first]', 'contact[name_last]', 'contact[email]', 'contact[phone]', 'app[_id]', 'app[name]', 'app[icon]', 'campaign[_id]', 'campaign[name]', 'product[UUID]', 'product[name]', 'product[price]', 'product[currency]']
 - id: deliveries
-  description: Message delivery status across SMS, push, and email channels.
-  events:
-  - queued
-  - sent
-  - delivered
-  - opened
-  - clicked
-  - rejected
-  - failed
-  - bounced
-  - unsubscribed
+  description: Message delivery status across the SMS, push and email channels.
+  discriminator: status
+  channels: [sms, push, email]
+  events: [none, queued, sent, deliverd, opened, clicked, rejected, undefined, undelivered, forbidden_country_code, failed, bounced, unsubscribed, dropped, complained]
+  events_note: >-
+    Copied verbatim from the published status list, including the provider's own typo "deliverd"
+    and the placeholder value "undefined". An integrator matching on "delivered" will silently
+    miss these events.
+  payload_fields: [id, created_at, updated_at, channel, status, refunded, url, 'campaign[_id]', 'campaign[name]', 'template[_id]', 'template[name]', 'template_data[sender]', 'template_data[subject]', 'template_data[content]', 'template_data[reply_to]', 'landing_page_sms[_id]', 'landing_page_sms[name]', 'landing_page_sms[url]', 'landing_page_push[_id]', 'landing_page_push[name]', 'landing_page_push[url]', channel_data, 'contact[_id]', 'contact[user_id]', 'contact[name_first]', 'contact[name_last]', 'contact[email]', 'contact[phone]', 'app[_id]', 'app[name]', 'app[icon]', 'device[_id]', 'device[type]', 'device[device_push_token]']
+  device_types: [ios, android, web]
+  note: >-
+    The `refunded` boolean signals that the account balance was credited back for an undelivered
+    message — the only place the consumption model surfaces in an event.
 - id: contacts
   description: Contact lifecycle changes.
-  events:
-  - create
-  - channel_subscription
-  - update
-  - destroy
+  discriminator: action
+  events: [create, channel_subscription, update, destroy]
+  origins: [sdk, platform_individual, platform_bulk, validation, campaign, api]
+  payload_fields: [action, origin, origin_sdk, contact, 'contact[id]', 'contact[user_id]', 'contact[changes]', 'contact[contact_url]', contacts_ids, user_ids, channel_subscription, 'channel_subscription[channel]', 'channel_subscription[blacklisted]', 'channel_subscription[origin]', 'channel_subscription[date]']
+  note: >-
+    On an update the payload carries only the changed keys in contact[changes] plus a
+    contact[contact_url] pointing at the full REST resource — a deliberate thin-event-plus-fetch
+    design. Bulk operations replace the single contact object with contacts_ids[] and user_ids[]
+    arrays.
 - id: bulk_contacts
-  description: Notification when a batch of contacts is imported, with success/failure counts.
+  description: Result notification for a batch contact import, with success and failure counts.
+  payload_fields: [contacts_valid_count, contacts_failed_count, failed_contacts, 'failed_contacts[contact]', 'failed_contacts[error]', valid_contacts, 'valid_contacts[_id]', 'valid_contacts[user_id]', 'valid_contacts[email]', 'valid_contacts[phone_countrycode]', 'valid_contacts[phone_number]']
+  note: >-
+    This is the asynchronous completion event for createBulkContact. The field dictionary names
+    failed_contacts[error] (singular) but the published example emits "errors" as an array —
+    a documented inconsistency, recorded verbatim.
 - id: incoming_sms
-  description: Received text messages, with sender information and timestamps.
+  description: Inbound text messages received on an account number.
+  payload_fields: [id, received_at, text, from]
+  note: The only inbound-from-the-outside-world event group; the rest are emissions from platform state changes.
+gaps:
+- No AsyncAPI, CloudEvents or JSON Schema document is published for any event group.
+- No subscription API — endpoints are registered only through the manager UI.
+- No event replay, no delivery log, and no dead-letter surface after the 4-hour retry window expires.
+- No published event versioning; payload shapes are documented only as prose field tables.

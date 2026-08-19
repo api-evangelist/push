@@ -1,12 +1,43 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: probed
-source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI servers[] hosts
 hosts:
 - host: pushtech.com
+  role: legacy marketing site
   https: true
   tls_version: TLSv1.3
   cert_expires: Dec 10 23:59:59 2026 GMT
   hsts: false
+- host: developers.cendyncrm.com
+  role: developer portal / API reference
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  1 18:29:53 2026 GMT
+  hsts: false
+- host: api.eu.cendyncrm.com
+  role: API base URL (EU data center)
+  https: true
+  http_version: HTTP/2
+  tls_version: TLSv1.3
+  cert_expires: Oct 31 10:26:20 2026 GMT
+  hsts: true
+  hsts_max_age: 63072000
+  hsts_include_subdomains: true
+- host: api.us.cendyncrm.com
+  role: API base URL (US data center)
+  https: true
+  http_version: HTTP/2
+  hsts: true
+  hsts_max_age: 63072000
+  hsts_include_subdomains: true
+- host: www.cendyn.com
+  role: parent-company marketing site
+  https: true
+  reachable: false
+  http_status: 403
+  note: >-
+    Cloudflare bot challenge on every request, including with a browser User-Agent. TLS and header
+    posture could not be assessed. This is an unprobeable host, not a security finding.
 domains:
 - domain: pushtech.com
   dnssec: false
@@ -14,3 +45,19 @@ domains:
   spf: true
   dmarc: true
   dmarc_policy: quarantine
+- domain: cendyncrm.com
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: true
+  dmarc_policy: none
+findings:
+- HSTS is enabled on both API hosts with a two-year max-age and includeSubDomains, but is absent on the developer portal and the legacy marketing site.
+- No CAA record on either registrable domain — any CA may issue for them.
+- No DNSSEC on either registrable domain.
+- 'cendyncrm.com — the domain that serves the live API and the developer portal — publishes no SPF record and a DMARC policy of p=none, so it is neither protected against spoofing nor enforcing. Notable for a platform whose product is sending email on customers'' behalf.'
+- 'The retired pushtech.com domain has the stronger email posture of the two (SPF present, DMARC p=quarantine); the active brand''s domain has the weaker one.'
+dead_hosts:
+- {host: developers.pushtech.com, dns: NXDOMAIN, note: 'former developer portal; retired without a redirect'}
+- {host: help.pushtech.com, dns: NXDOMAIN, note: 'former help centre'}
+- {host: www.cendyncrm.com, dns: 'no A record', note: 'the sign-in and manager links published in the live developer portal point here and are broken'}

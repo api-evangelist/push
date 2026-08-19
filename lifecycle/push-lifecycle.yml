@@ -1,0 +1,75 @@
+generated: '2026-08-13'
+method: searched
+source:
+- https://developers.cendyncrm.com/api
+- https://developers.cendyncrm.com/api/reference
+- openapi/push-cendyn-crm-openapi.yml
+api: Cendyn CRM (PUSHTech) REST API
+versioning:
+  scheme: uri-path
+  current: v2
+  docs: https://developers.cendyncrm.com/api/reference
+  policy_published: false
+  note: >-
+    65 of 67 documented operations carry a /v2/ prefix. The two Sync Data operations
+    (POST /account/{account_id}/sync_data, GET /account/{account_id}/sync_data/{id}) are
+    published with no version prefix at all. No v1 surface is documented, no policy explains what
+    a version bump means, and no date-based or header-based version negotiation exists.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy, no RFC 8594 Sunset or Deprecation header support, and not one of the
+    67 documented operations is marked deprecated. No `Deprecation` pointer is emitted in
+    apis.yml because the provider publishes no deprecation policy.
+status_page:
+  url: null
+  published: false
+  probe:
+    method: probed
+    date: '2026-08-13'
+    results:
+    - {url: 'https://status.cendyncrm.com/', status: 0, note: does not resolve}
+    - {url: 'https://status.cendyn.com/', status: 301, note: 'redirects to https://maintenance.cdcservices.com//Cendyn.com/index.html — a maintenance holding page, not a status page'}
+  note: >-
+    No status page, no uptime history and no incident feed could be found on any host. No
+    `StatusPage` pointer is emitted in apis.yml.
+sla:
+  url: null
+  uptime_target: null
+  published: false
+changelog:
+  url: null
+  published: false
+  note: >-
+    No dated changelog, release notes or API news page exists on developers.cendyncrm.com. The
+    only dated signal available for this API is the Web SDK build, last modified 2024-06-26
+    (see packages/push-packages.yml). No changelog/ artifact is emitted.
+platform_lifecycle:
+  event: rebrand-after-acquisition
+  observed: '2026-08-13'
+  detail: >-
+    PUSHTech was acquired by Cendyn and the product is now Cendyn CRM. The lifecycle consequence
+    is visible in DNS: developers.pushtech.com, help.pushtech.com and the old portal hosts no
+    longer resolve (NXDOMAIN), and the developer portal moved to developers.cendyncrm.com. The
+    move was executed without a redirect — the retired hostnames were simply removed, so every
+    inbound link, bookmark and integration doc pointing at developers.pushtech.com is dead. The
+    API host's own 404 body is the only breadcrumb to the new location.
+  evidence:
+  - {url: 'http://developers.pushtech.com/api', status: 0, note: DNS NXDOMAIN}
+  - {url: 'http://help.pushtech.com', status: 0, note: DNS NXDOMAIN}
+  - {url: 'https://api.eu.cendyncrm.com/openapi.json', status: 404, note: 'body: {"error":"Route not found, please visit https://developers.cendyncrm.com/api/reference"}'}
+  - {url: 'https://developers.cendyncrm.com/api/reference', status: 200}
+broken_links_in_published_docs:
+- url: https://www.cendyncrm.com/users/sign_in
+  status: 0
+  note: >-
+    The LOGIN link in the header of every developer-portal page, and the list-management links in
+    the Web SDK documentation (https://www.cendyncrm.com/manager/lists), point at
+    www.cendyncrm.com, which has no DNS A record. The portal's own sign-in path is broken.
+regions:
+- {region: EU, base_url: 'https://api.eu.cendyncrm.com', status: live}
+- {region: US, base_url: 'https://api.us.cendyncrm.com', status: live}

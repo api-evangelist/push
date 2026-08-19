@@ -1,0 +1,118 @@
+arazzo: 1.0.1
+info:
+  title: Load a product catalog and attach guest purchase history
+  version: 1.0.0
+  description: >-
+    Discover account-specific product custom fields, create a product, record a purchase against
+    an existing guest contact, and read the purchase back to confirm it landed — the flow that
+    turns the Cendyn CRM (PUSHTech) contact database into a customer data platform. Authored by
+    API Evangelist against the derived OpenAPI; every operationId is verified to exist in it.
+sourceDescriptions:
+  - name: cendynCrm
+    url: ../openapi/push-cendyn-crm-openapi.yml
+    type: openapi
+workflows:
+  - workflowId: loadCatalogAndPurchaseHistory
+    summary: Create a product, attach a purchase to a contact, and verify it.
+    description: >-
+      Products must exist before purchases can reference them — the purchase body links products
+      by UUID. Note that products are keyed by UUID while contacts use a 24-character hex id;
+      the two identifier styles are not interchangeable.
+    inputs:
+      type: object
+      required: [accountId, contactId, productName, productPrice, productCurrency]
+      properties:
+        accountId: {type: string, description: The Cendyn CRM account id.}
+        contactId:
+          type: string
+          description: An existing contact id. Run push-onboard-and-welcome-guest first if you do not have one.
+        productName: {type: string}
+        productPrice: {type: number}
+        productCurrency: {type: string, description: Currency code for the product price.}
+        campaignId:
+          type: string
+          description: Optional campaign to attribute the purchase to.
+    steps:
+      - stepId: discoverProductCustomFields
+        description: >-
+          Product objects are open — account-defined custom fields are sent as plain top-level
+          members under the field name, not its label. Read them before building the payload,
+          because the documented property list is not exhaustive for a given account.
+        operationId: listProductCustomFields
+        parameters:
+          - name: account_id
+            in: path
+            value: $inputs.accountId
+        successCriteria:
+          - condition: $statusCode == 200
+
+      - stepId: createProduct
+        description: Create the catalog entry. Returns 201; products are addressed by UUID thereafter.
+        operationId: createProduct
+        parameters:
+          - name: account_id
+            in: path
+            value: $inputs.accountId
+        requestBody:
+          contentType: application/json
+          payload:
+            name: $inputs.productName
+            price: $inputs.productPrice
+            currency: $inputs.productCurrency
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          productUuid: $response.body#/UUID
+
+      - stepId: createPurchase
+        description: >-
+          Record the purchase under the contact. NOT idempotent — a retry creates a second
+          purchase and inflates the guest's spend history. On a timeout, run listContactPurchases
+          below and check before retrying.
+        operationId: createPurchase
+        parameters:
+          - name: account_id
+            in: path
+            value: $inputs.accountId
+          - name: contact_id
+            in: path
+            value: $inputs.contactId
+        requestBody:
+          contentType: application/json
+          payload:
+            campaign_id: $inputs.campaignId
+            products:
+              - UUID: $steps.createProduct.outputs.productUuid
+        successCriteria:
+          - condition: $statusCode == 201
+
+      - stepId: listContactPurchases
+        description: >-
+          Read the purchase back. Purchases are addressed at ACCOUNT level once created, not under
+          the contact, so filter by contact_id here. There is no pagination on this operation —
+          filter narrowly rather than listing the whole account.
+        operationId: listPurchase
+        parameters:
+          - name: account_id
+            in: path
+            value: $inputs.accountId
+          - name: contact_id
+            in: query
+            value: $inputs.contactId
+        successCriteria:
+          - condition: $statusCode == 200
+
+      - stepId: verifyProduct
+        description: Confirm the catalog entry reads back with the values that were written.
+        operationId: showProduct
+        parameters:
+          - name: account_id
+            in: path
+            value: $inputs.accountId
+          - name: UUID
+            in: path
+            value: $steps.createProduct.outputs.productUuid
+        successCriteria:
+          - condition: $statusCode == 200
+    outputs:
+      productUuid: $steps.createProduct.outputs.productUuid

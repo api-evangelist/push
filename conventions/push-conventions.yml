@@ -1,39 +1,112 @@
-generated: '2026-07-20'
+generated: '2026-08-13'
 method: searched
 source:
-- http://developers.pushtech.com/api/authentication
-- http://developers.pushtech.com/api/webhooks
+- https://developers.cendyncrm.com/api/authentication
+- https://developers.cendyncrm.com/api/reference
+- https://developers.cendyncrm.com/api/webhooks
+- https://developers.cendyncrm.com/websdk
+- openapi/push-cendyn-crm-openapi.yml
+probe:
+  url: https://api.eu.cendyncrm.com/v2/account/000000000000000000000000/contact
+  date: '2026-08-13'
+  http_status: 401
+  note: >-
+    Unauthenticated live request used to observe the real response envelope and headers.
+    The same probe against https://api.us.cendyncrm.com returned an identical shape.
 api: Cendyn CRM (PUSHTech) REST API
-base_url: https://api.eu.cendyncrm.com
+base_urls:
+- {url: 'https://api.eu.cendyncrm.com', region: EU}
+- {url: 'https://api.us.cendyncrm.com', region: US}
+region_selection:
+  documented: true
+  mechanism: >-
+    The API reference page carries a data-center selector offering EU
+    (https://api.eu.cendyncrm.com) and US (https://api.us.cendyncrm.com). An account lives in
+    exactly one data center; the base URL is not interchangeable between them.
 auth:
   style: token-in-header
   header: Authorization
-  format: 'Token token={{secret}}'
-  contexts:
-  - account
-  - apps
+  format: 'Token token={{account_secret}}'
+  master_variant: 'Token token={{account_master_secret}}'
+  contexts: [account, apps]
   cross_ref: authentication/push-authentication.yml
-webhooks:
-  signing: HMAC-SHA256 in Authorization header
-  auth_parameters:
-  - timestamp
-  - token
-  - account_id
-  retries:
-    window: 4 hours
-    schedule: progressive interval
-    exceptions:
-    - delivery events not retried
-  cross_ref: asyncapi/push-webhooks.yml
-idempotency:
-  documented: false
-pagination:
-  documented: false
-rate_limiting:
-  documented: false
+versioning:
+  scheme: uri-path
+  current: v2
+  documented_policy: false
+  note: >-
+    All but two documented operations are prefixed /v2/. The Sync Data resource
+    (POST /account/:account_id/sync_data, GET /account/:account_id/sync_data/:id) is published
+    with NO version prefix at all — an unversioned surface sitting beside the v2 surface. No
+    versioning or deprecation policy is published; see lifecycle/push-lifecycle.yml.
+resource_scoping:
+  pattern: '/v{n}/account/{account_id}/{resource}'
+  note: >-
+    Every operation except none is account-scoped; account_id is a required path segment on all
+    67 documented operations, and is also listed as a required parameter in each reference table.
+request_tracing:
+  supported: true
+  method: probed
+  response_header: x-request-id
+  example: '0065df06-a7ed-41d2-a848-45d866efd085'
+  note: >-
+    Observed on live responses from both data centers. Not documented in the developer portal —
+    recorded here from the probe above. A second header, x-runtime, carries server processing
+    time in seconds.
+  additional_headers:
+  - {name: x-runtime, description: Server processing time in seconds}
 error_envelope:
   documented: false
+  observed: true
+  shape: '{"error": "<human-readable message>"}'
+  content_type: application/json
+  format: bare-json
+  rfc9457: false
+  note: >-
+    Errors are returned as a flat JSON object with a single `error` string. This is NOT
+    RFC 9457 problem+json — there is no type, title, status or detail member and the
+    Content-Type is application/json, not application/problem+json.
+  cross_ref: errors/push-problem-types.yml
+idempotency:
+  documented: false
+  supported: false
+  note: >-
+    No idempotency key header, no idempotent-retry contract, and no Idempotency-Key parameter
+    appears anywhere in the developer portal or in any of the 67 documented operations. No
+    `Idempotency` pointer is emitted in apis.yml because the provider does not offer one.
+    Consequence for agents: POST /v2/account/{account_id}/contact and the three delivery-send
+    operations are NOT safe to blind-retry.
+pagination:
+  documented: false
+  partial: true
+  note: >-
+    No pagination contract is documented and no page/cursor/limit parameter is published on any
+    list operation. The list operations do publish filter and sort parameters (see the reference
+    tables captured in openapi/push-cendyn-crm-openapi.yml), but nothing that bounds or advances
+    a result set. An agent cannot determine whether a list response is complete.
+rate_limiting:
+  documented: false
+  observed_headers: []
+  note: >-
+    No published limits, and no X-RateLimit-*, RateLimit-* or Retry-After header was present on
+    the probed responses from either data center.
+  cross_ref: rate-limits/push-rate-limits.yml
+content_types:
+  request: application/json
+  response: application/json
+  accept_header: 'Accept: application/json'
+custom_fields:
+  supported: true
+  note: >-
+    Contact, Company, Product and Hotel Data each expose a custom-fields resource, and custom
+    field names are then passed as top-level members of the parent object's JSON body. This means
+    the request schema for those objects is open — the documented property list is not exhaustive
+    for a given account.
+webhooks:
+  signing: HMAC-SHA256 over (timestamp + token) keyed with the account secret, compared to the Authorization header
+  cross_ref: asyncapi/push-webhooks.yml
 notes: >-
-  Cross-cutting semantics derived from the published authentication and webhooks
-  documentation. Idempotency, pagination, rate-limit signaling, and a formal error
-  envelope are not documented in the public developer portal.
+  Cross-cutting semantics captured from the Cendyn CRM developer portal (the successor to the
+  retired developers.pushtech.com), the derived OpenAPI, and one live unauthenticated probe of
+  each data center. Idempotency, pagination, rate-limit signaling and a formal error format are
+  all genuinely undocumented; request-id tracing is real but undocumented and was found by probe.

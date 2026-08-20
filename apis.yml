@@ -50,6 +50,19 @@ tags:
 - Email
 - SMS
 - Push Notifications
+- Webhook
+- Segmentation
+tags_raw:
+- Company
+- CRM
+- Customer Data Platform
+- Marketing Automation
+- Hospitality
+- Hotels
+- Guest Experience
+- Email
+- SMS
+- Push Notifications
 - Webhooks
 - Segmentation
 maintainers:

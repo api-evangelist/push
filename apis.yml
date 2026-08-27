@@ -71,21 +71,16 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 apis:
-- name: Cendyn CRM (PUSHTech) REST API
-  description: >-
-    Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP
-    platform. 67 operations across 15 resources: read the account credit balance, manage contacts
-    and their custom fields, companies, products, purchases, coupon lists, hotel data and audience
-    lists, read campaigns and preview a campaign message for one contact, send email, SMS and push
-    deliveries and track their status, and bulk-ingest contacts and purchases through Sync Data.
-    HMAC-signed webhooks publish activity, delivery, contact, bulk-contact and inbound-SMS events.
+- aid: push:push-account-api
+  name: Push Account API
+  description: The Account API from Push — 1 operation(s) for account.
   humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Account
   properties:
   - type: OpenAPI
-    url: openapi/push-cendyn-crm-openapi.yml
-  - type: Overlay
-    url: overlays/push-cendyn-crm-overlay.yaml
+    url: openapi/push-account-api-openapi.yml
   - type: AsyncAPI
     url: asyncapi/push-webhooks-asyncapi.yml
   - type: Webhooks
@@ -106,14 +101,427 @@ apis:
     url: rate-limits/push-rate-limits.yml
   - type: AgenticAccess
     url: agentic-access/push-agentic-access.yml
-  - type: AgentSkill
-    url: skills/_index.yml
-  x-regions:
-  - {region: EU, baseURL: 'https://api.eu.cendyncrm.com'}
-  - {region: US, baseURL: 'https://api.us.cendyncrm.com'}
-  x-region-note: >-
-    An account lives in exactly one data center. The two base URLs are not interchangeable —
-    calling the wrong one returns 401 with the same body as an invalid token.
+- aid: push:push-audience-list-api
+  name: Push Audience List API
+  description: The Audience List API from Push — 2 operation(s) for audience list.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Audience List
+  properties:
+  - type: OpenAPI
+    url: openapi/push-audience-list-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-campaigns-api
+  name: Push Campaigns API
+  description: The Campaigns API from Push — 3 operation(s) for campaigns.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Campaigns
+  properties:
+  - type: OpenAPI
+    url: openapi/push-campaigns-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-company-api
+  name: Push Company API
+  description: The Company API from Push — 2 operation(s) for company.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Company
+  properties:
+  - type: OpenAPI
+    url: openapi/push-company-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-company-custom-fields-api
+  name: Push Company custom fields API
+  description: The Company custom fields API from Push — 2 operation(s) for company custom fields.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Company custom fields
+  properties:
+  - type: OpenAPI
+    url: openapi/push-company-custom-fields-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-contact-api
+  name: Push Contact API
+  description: The Contact API from Push — 5 operation(s) for contact.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Contact
+  properties:
+  - type: OpenAPI
+    url: openapi/push-contact-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-contact-custom-fields-api
+  name: Push Contact Custom fields API
+  description: The Contact Custom fields API from Push — 2 operation(s) for contact custom fields.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Contact Custom fields
+  properties:
+  - type: OpenAPI
+    url: openapi/push-contact-custom-fields-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-coupon-lists-api
+  name: Push Coupon lists API
+  description: The Coupon lists API from Push — 3 operation(s) for coupon lists.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Coupon lists
+  properties:
+  - type: OpenAPI
+    url: openapi/push-coupon-lists-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-deliveries-api
+  name: Push Deliveries API
+  description: The Deliveries API from Push — 5 operation(s) for deliveries.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Deliveries
+  properties:
+  - type: OpenAPI
+    url: openapi/push-deliveries-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-hotel-data-api
+  name: Push Hotel Data API
+  description: The Hotel Data API from Push — 4 operation(s) for hotel data.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Hotel Data
+  properties:
+  - type: OpenAPI
+    url: openapi/push-hotel-data-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-hotel-data-custom-fields-api
+  name: Push Hotel Data custom fields API
+  description: >-
+    The Hotel Data custom fields API from Push — 2 operation(s) for hotel data custom fields.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Hotel Data custom fields
+  properties:
+  - type: OpenAPI
+    url: openapi/push-hotel-data-custom-fields-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-product-api
+  name: Push Product API
+  description: The Product API from Push — 2 operation(s) for product.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Product
+  properties:
+  - type: OpenAPI
+    url: openapi/push-product-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-product-custom-fields-api
+  name: Push Product custom fields API
+  description: The Product custom fields API from Push — 2 operation(s) for product custom fields.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Product custom fields
+  properties:
+  - type: OpenAPI
+    url: openapi/push-product-custom-fields-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-purchase-api
+  name: Push Purchase API
+  description: The Purchase API from Push — 4 operation(s) for purchase.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Purchase
+  properties:
+  - type: OpenAPI
+    url: openapi/push-purchase-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
+- aid: push:push-sync-data-api
+  name: Push Sync Data API
+  description: The Sync Data API from Push — 2 operation(s) for sync data.
+  humanURL: https://developers.cendyncrm.com/api/reference
+  baseURL: https://api.eu.cendyncrm.com
+  tags:
+  - Sync Data
+  properties:
+  - type: OpenAPI
+    url: openapi/push-sync-data-api-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/push-webhooks-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/push-webhooks.yml
+  - type: Authentication
+    url: authentication/push-authentication.yml
+  - type: Conventions
+    url: conventions/push-conventions.yml
+  - type: ErrorCatalog
+    url: errors/push-problem-types.yml
+  - type: DataModel
+    url: data-model/push-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/push-lifecycle.yml
+  - type: Conformance
+    url: conformance/push-conformance.yml
+  - type: RateLimits
+    url: rate-limits/push-rate-limits.yml
+  - type: AgenticAccess
+    url: agentic-access/push-agentic-access.yml
 common:
 - type: Website
   url: https://pushtech.com

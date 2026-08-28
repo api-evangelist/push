@@ -1,8 +1,8 @@
-generated: '2026-08-13'
-method: generated
-source: openapi/push-cendyn-crm-openapi.yml
-api: Cendyn CRM (PUSHTech) REST API
-note: >-
+x-generated: '2026-08-13'
+x-method: generated
+x-source: openapi/push-cendyn-crm-openapi.yml
+x-api: Cendyn CRM (PUSHTech) REST API
+x-note: >-
   Native Arazzo 1.0.1 workflows authored by API Evangelist against openapi/push-cendyn-crm-openapi.yml.
   Every operationId used in every step was verified to exist verbatim in that spec. Cendyn CRM
   publishes no workflow or recipe documentation of its own.

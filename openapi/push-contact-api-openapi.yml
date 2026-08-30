@@ -1,0 +1,674 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Contact API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Contact
+paths:
+  /v2/account/{account_id}/contact:
+    post:
+      operationId: createContact
+      summary: Create — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/create
+      x-source-path: /v2/account/{account_id}/contact/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  description: Contact associated device_id
+                name_first:
+                  description: Name of the contact
+                name_last:
+                  description: Last name of the contact
+                email:
+                  description: Email of the contact
+                phone_countrycode:
+                  description: Country code of the contact phone
+                phone_number:
+                  description: Phone number without country code of the contact
+                phone:
+                  description: Full phone number with country code of the contact
+                city:
+                  description: City of the contact
+                country:
+                  description: Country of the contact
+                region:
+                  description: Region of the contact
+                zip:
+                  description: Zip code of the contact
+                full_address:
+                  description: Address of the contact
+                born_date:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gender:
+                  description: Gender of the contact (MALE or FEMALE)
+                language:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                user_id:
+                  description: Unique identifier of contact in your backend
+                facebook_id:
+                  description: Facebook id of the contact
+                facebook_friends:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                google_id:
+                  description: Google+ id of the contact
+                twitter_id:
+                  description: Twitter id of the contact
+                twitter_followers:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                gdpr_date:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                last_latitude:
+                  type: number
+                  description: 'Last GPS latitude, Number, example: 27.994401'
+                last_longitude:
+                  type: number
+                  description: 'Last GPS longitude, Number, example: -81.726896'
+                '[custom field]':
+                  description: You can create a custom field and use in every contact, only add parameter in the json with the name of custom ( no label)
+                list_subscriptions[list_id]:
+                  description: Id of audience list
+                list_subscriptions[subscribed]:
+                  type: boolean
+                  description: If true, subscribe in this list
+                gdpr_marketing_consent:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                gdpr_accept_terms:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                gdpr_remote_ip:
+                  description: 'String type: Contact IP when accepted GDPR'
+                email_validation:
+                  description: Json with email_validation parameters
+                email_validation[validate]:
+                  type: boolean
+                  description: 'Boolean, if true, validate contact Email, Default: false'
+                email_validation[create_if_invalid]:
+                  type: boolean
+                  description: 'Boolean: If true, the contact contact will be created if Email is not valid, Default: false'
+                email_validation[create_if_no_credit]:
+                  type: boolean
+                  description: 'Boolean: If true, create contact if the account hasn''t credit for validation, Default: false'
+            example:
+              name_first: John
+              name_last: Doe
+              email: '[email protected]'
+              phone_countrycode: '44'
+              phone_number: '7712345678'
+              tags:
+              - tag1
+              - tag2
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listContact
+      summary: List — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/list
+      x-source-path: /v2/account/{account_id}/contact/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Contact user_id'
+      - name: device_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Contact associated device_id'
+      - name: name_first
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Name of the contact'
+      - name: name_last
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Last name of the contact'
+      - name: email
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Email fo the contact'
+      - name: phone_countrycode
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Country code of the contact phone'
+      - name: phone_number
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Phone number without country code of the contact'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'limit of number contacts returns, default: 200'
+      - name: contact_id_from
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Contact id to start the list
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'creation_date order asc or desc, default: asc'
+      responses:
+        '200':
+          description: Successful response
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/bulk:
+    post:
+      operationId: createBulkContact
+      summary: Create Bulk — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/create_bulk
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts:
+                  description: Array of contact data. Maximum of 5000 contacts per request.
+                match_contact_user_id:
+                  type: boolean
+                  description: 'If true, update the contact who have this user_id on the Cendyn CRM platform, else create a new one. By default: false'
+                webhook_url:
+                  description: A URL designated to receive notifications or data via webhook transmissions.
+                validate_emails:
+                  type: boolean
+                  description: 'If true, validate all contact´s emails of the bulk. This service has an extra cost and will use credits of your Pushtech account. If not enought credits the import will be processed without emails validation. By default: false'
+                contacts_webhook_extra_fields:
+                  description: 'Array that contain extra fields needed to be sent by the webhook. By default it is sent by the webhook the following fields: _id, user_id, email, phone_countrycode, phone_number'
+                contacts[device_id]:
+                  description: Contact associated device_id
+                contacts[name_first]:
+                  description: Name of the contact
+                contacts[name_last]:
+                  description: Last name of the contact
+                contacts[email]:
+                  description: Email of the contact
+                contacts[phone_countrycode]:
+                  description: Country code of the contact phone
+                contacts[phone_number]:
+                  description: Phone number without country code of the contact
+                contacts[phone]:
+                  description: Full phone number with country code of the contact
+                contacts[city]:
+                  description: City of the contact
+                contacts[country]:
+                  description: Country of the contact
+                contacts[region]:
+                  description: Region of the contact
+                contacts[zip]:
+                  description: Zip code of the contact
+                contacts[full_address]:
+                  description: Address of the contact
+                contacts[born_date]:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gender]:
+                  description: Gender of the contact (MALE or FEMALE)
+                contacts[language]:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                contacts[user_id]:
+                  description: Unique identifier of contact in your backend
+                contacts[facebook_id]:
+                  description: Facebook id of the contact
+                contacts[facebook_friends]:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                contacts[google_id]:
+                  description: Google+ id of the contact
+                contacts[twitter_id]:
+                  description: Twitter id of the contact
+                contacts[twitter_followers]:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                contacts[tags]:
+                  description: Array containing tags for this contact
+                contacts[list_subscriptions[list_id]]:
+                  description: Id of audience list
+                contacts[list_subscriptions[subscribed]]:
+                  type: boolean
+                  description: If true, subscribe from this list
+                contacts[channel_subscriptions[channel]]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                contacts[channel_subscriptions[blacklisted]]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                contacts[gdpr_accept_terms]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                contacts[gdpr_marketing_consent]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                contacts[gdpr_date]:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gdpr_remote_ip]:
+                  description: 'String type: Contact IP when accepted GDPR'
+                contacts[[custom field]]:
+                  description: You can create a custom field and use in every contact, only add parameter in the json with the name of custom (no label)
+              required:
+              - contacts
+            example:
+              webhook_url: https://requestb.in/qxvaw0qx
+              match_contact_user_id: false
+              validate_emails: false
+              contacts_webhook_extra_fields:
+              - name_first
+              contacts:
+              - name_first: John
+                name_last: Doe
+                email: '[email protected]'
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+              - name_first: John
+                name_last: Doe
+                email: '[email protected]'
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                bulk:
+                  _id: 550aac3da096734ce5000001
+                  number_of_contacts: 2
+                  match_contact_user_id: false
+                  validate_emails: false
+                  contacts_webhook_extra_fields:
+                  - name_first
+                  webhook_url: https://requestb.in/qxvaw0qx
+                  status: queue
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/bulk/{bulk_id}:
+    get:
+      operationId: getBulkContact
+      summary: Get Bulk — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/get_bulk
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: bulk_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Bulk id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                bulk:
+                  _id: 550aac3da096734ce5000001
+                  number_of_contacts: 2
+                  match_contact_user_id: false
+                  validate_emails: false
+                  contacts_webhook_extra_fields:
+                  - name_first
+                  webhook_url: https://requestb.in/qxvaw0qx
+                  status: queue
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/{contact_id}:
+    get:
+      operationId: showContact
+      summary: Show — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be showed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateContact
+      summary: Update — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  description: Contact associated device_id
+                name_first:
+                  description: Name of the contact
+                name_last:
+                  description: Last name of the contact
+                email:
+                  description: Email fo the contact
+                phone_countrycode:
+                  description: Country code of the contact phone
+                phone_number:
+                  description: Phone number without country code of the contact
+                phone:
+                  description: Full phone number with country code of the contact
+                city:
+                  description: City of the contact
+                country:
+                  description: Country of the contact
+                region:
+                  description: Region of the contact
+                zip:
+                  description: Zip code of the contact
+                full_address:
+                  description: Address of the contact
+                born_date:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gender:
+                  description: Gender of the contact (MALE or FEMALE)
+                language:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                user_id:
+                  description: Unique identifier of contact in your backend
+                facebook_id:
+                  description: Facebook id of the contact
+                facebook_friends:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                google_id:
+                  description: Google+ id of the contact
+                twitter_id:
+                  description: Twitter id of the contact
+                twitter_followers:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                tags:
+                  description: Array containing tags for this contact
+                last_latitude:
+                  type: number
+                  description: 'Last GPS latitude, Number, example: 27.994401'
+                last_longitude:
+                  type: number
+                  description: 'Last GPS longitude, Number, example: -81.726896'
+                '[custom field]':
+                  description: You can create a custom field and use in every contact, only add parameter in the json with the name of custom ( no label)
+                list_subscriptions[list_id]:
+                  description: Id of audience list
+                list_subscriptions[subscribed]:
+                  type: boolean
+                  description: If true, subscribe in this list
+                channel_subscriptions[channel]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                channel_subscriptions[blacklisted]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                gdpr_marketing_consent:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                gdpr_accept_terms:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                gdpr_date:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                gdpr_remote_ip:
+                  description: 'String type: Contact IP when accepted GDPR'
+            example:
+              name_first: John
+              name_last: Doe
+              email: '[email protected]'
+              phone_countrycode: '44'
+              phone_number: '7712345678'
+              tags:
+              - tag1
+              - tag2
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteContact
+      summary: Delete — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact to be deleted
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name_first: John
+                name_last: Doe
+                phone_countrycode: '44'
+                phone_number: '7712345678'
+                email: '[email protected]'
+                tags:
+                - tag1
+                - tag2
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/contact/{contact_id}/email_validation:
+    get:
+      operationId: emailValidationContact
+      summary: Email validation — Contact
+      tags:
+      - Contact
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/contact/email_validation
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact for the email validation
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                email_valid: true
+                last_email_verified: '2020-06-16T08:25:03.230+00:00'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

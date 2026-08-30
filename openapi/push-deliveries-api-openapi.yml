@@ -1,0 +1,463 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Deliveries API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Deliveries
+paths:
+  /v2/account/{account_id}/email/deliveries:
+    post:
+      operationId: sendEmailDeliveries
+      summary: Send Email — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_email
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  description: Parameter containing the name of who sent the message.
+                sender_email:
+                  description: Parameter containing the email of who sent the message.
+                subject_holder:
+                  description: 'Parameter containing the subject of the message. This message can have interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning %{name}".'
+                message_holder:
+                  description: 'Parameter containing the content of the message. This message can have interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning %{name}".'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains two key-value elements, email and replacements. The email value contains the destination of the email. The replacements contains a hash with the values of the interpolation''s containers. Example: [{ email: "[email protected]", replacements: {"name": "John"} }]'
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter start_at
+                start_at:
+                  description: Time when to send the email
+              required:
+              - sender
+              - sender_email
+              - subject_holder
+              - message_holder
+              - deliveries
+              - start_now
+            example:
+              sender: John Doe
+              sender_email: '[email protected]'
+              subject_holder: Hello %{name}
+              message_holder: <html><h1>Hey! This is a test %{name} %{surname}</h1></html>
+              start_now: true
+              deliveries:
+              - email: '[email protected]'
+                replacements:
+                  name: Jane
+                  surname: Doe
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - valid: true
+                  delivery_id: 550ab6a1a096734ce5000002
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/push/deliveries:
+    post:
+      operationId: sendPushDeliveries
+      summary: Send Push — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_push
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                app_id:
+                  description: Your app unique identifier to access the API. This parameter is part of the authorization process
+                subject:
+                  description: Title of the push notification that will appear in the notification bar of the user's device.
+                message_holder:
+                  description: 'parameter containing the content of the message. this message can have interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning %{name}".'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains two key-value elements, device_id and replacements . The device_id, user_id or contact_id that send the delivery. The replacements contains a hash with the values of the interpolation''s containers. Example: [{ device_id: "550ab6a1a096734ce5000002", replacements: {"name": "Your Name"} }]'
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter start_at
+                send_all_devices:
+                  type: boolean
+                  description: If true, send all contact's devices, else send the last contact's device. Only available when use 'user_id' or 'contact_id'
+                start_at:
+                  type: string
+                  format: date-time
+                  description: Parameter containing the date when the deliveries will be send. the date has to been formated following the ISO 8601. If the date introduced is before from now your deliveries will be send instantly
+                alert:
+                  description: Parameter to set the title of the push notification. If it is blank, then we will send a silent push notification. (Only iOS)
+                sound:
+                  description: Parameter to specify the file sound to play when a push notification is received. (Only iOS)
+                url:
+                  description: Parameter to specify rich content in the push notification
+                thumbnail_url:
+                  description: To send a big picture notification
+                category_push:
+                  description: 'Interactive Notifications with Notification Actions, only the following strings are accepted: ''CATEGORY_OK'', ''CATEGORY_EDIT'', ''CATEGORY_FIND'', ''CATEGORY_LIKE_DISLIKE'', ''CATEGORY_LAUNCH'', ''CATEGORY_REMIND'', ''CATEGORY_DELETE'', ''CATEGORY_FORBID'', ''CATEGORY_LIKE_FOLLOW'', ''CATEGORY_LIKE_SHARE'', ''CATEGORY_SHARE'', ''CATEGORY_SHOP'', ''CATEGORY_YES'', ''CATEGORY_ACCEPT'', ''CATEGORY_SEND'', ''CATEGORY_BUY'', ''CATEGORY_SAVE'''
+                badge:
+                  description: iOS only. The number to display as the badge of the app icon. If this property is absent, the badge is not changed. To remove the badge, set the value of this property to 0.
+                silent:
+                  description: 'iOS only. If true, means that when your app is launched in the background or resumed, application:didReceiveRemoteNotification:fetchCompletionHandler: is called.'
+                extra:
+                  description: Parameter to specify custom content that will be shown on delivery
+              required:
+              - app_id
+              - subject
+              - message_holder
+              - deliveries
+              - start_now
+            example:
+              app_id: '{{app_id}}'
+              subject: PushMsg
+              send_all_devices: true
+              url: https://www.cendyncrm.com
+              thumbnail_url: https://www.cendyncrm.com/assets/logo-light-daf5fc9918db1e811190d12aea30947d.png
+              category_push: CATEGORY_FIND
+              message_holder: Hello %{name}, this is a Push Notification
+              start_now: 'true'
+              alert: Hi %{name}
+              silent: false
+              deliveries:
+              - device_id: '{{device_id}}'
+                replacements:
+                  name: John
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - - valid: true
+                    delivery_id: 550ab6a1a096734ce5000002
+                    device_id: 5834114ff92ea112ad000001
+                  - valid: true
+                    delivery_id: 550ab6a1a096734ce5000003
+                    device_id: 5834167ff92ea112ad304059
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/sms/deliveries:
+    post:
+      operationId: sendSMSDeliveries
+      summary: Send SMS — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/send_sms
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  description: MAX 11 characters. Parameter containing the name of who sent the message.
+                message_holder:
+                  description: 'Parameter containing the content of the message. this message can have interpolation''s containers inserted as %{name_of_variable}. Example: "Hi, good morning %{name}"'
+                deliveries:
+                  description: 'Parameter containing an array of hashes. those hashes contains key-value elements as phone number and replacements. Example: [{phone_number: "+447712345678", replacements: {"name": "Your name"}}]'
+                deliveries[phone_number]:
+                  description: The phone number value has to be formated following the standart E164.
+                deliveries[replacements]:
+                  description: The replacements contains a hash with the values of the interpolation's containers
+                deliveries[multiple]:
+                  type: boolean
+                  description: if true send multiple sms items for unicode message or long messages.By default set to false.
+                start_now:
+                  description: Parameter to schedule the deliveries with the date provided with the parameter start_at.
+                start_at:
+                  type: string
+                  format: date-time
+                  description: Parameter containing the date when the deliveries will be send. the date has to been formated following the ISO 8601. If the date introduced is before from now your deliveries will be send instantly.
+              required:
+              - sender
+              - message_holder
+              - deliveries
+              - deliveries[phone_number]
+              - deliveries[replacements]
+              - start_now
+            example:
+              sender: CocaCola
+              message_holder: Hello %{name}, how are you?
+              start_now: true
+              deliveries:
+              - phone_number: '+447712345678'
+                replacements:
+                  name: John
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - valid: true
+                  delivery_id: 550ab6a1a096734ce5000002
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/delivery/{delivery_id}:
+    get:
+      operationId: showDeliveries
+      summary: Show — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization process
+      - name: delivery_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: 'unique identifier of the Delivery you want to get all the information. This parameter have to replace: delivery_id in the example of the call.'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                delivery:
+                  id: 54f97ac2a09673c4b5000001
+                  created_at: '2015-03-06T10:00:34Z'
+                  updated_at: '2015-03-06T10:00:42Z'
+                  channel: EMAIL
+                  status: sent
+                  refunded: false
+                  template_data:
+                    sender: John
+                    subject: Hey Jane!
+                    content: Hey! This is a test, Jane
+                  channel_data:
+                    '3': '[email protected]'
+                  price:
+                    amount: 0.01
+                    currency: €
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/deliveries:
+    get:
+      operationId: listDeliveries
+      summary: List — Deliveries
+      tags:
+      - Deliveries
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/deliveries/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access the API. This parameter is part of the authorization process
+      - name: delivery_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'Unique identifier of the Delivery you want to get all the information. This parameter have to replace: delivery_id in the example of the call.'
+      - name: app_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by app_id
+      - name: campaign_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by campaign_id
+      - name: channel
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by channel
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by status
+      - name: refunded
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by refunded
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by contact_id
+      - name: device_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by device_id
+      - name: created_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Created since inclusive
+      - name: created_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Created until inclusive
+      - name: updated_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Updated since inclusive
+      - name: updated_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Updated until inclusive
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Max number of deliveries returned, default max set to 200
+      - name: from_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Query deliveries after this delivery
+      - name: until_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Query deliveries before this delivery
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Creation DESC or ASC order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                deliveries:
+                - delivery:
+                    id: 54f97ac2a09673c4b5000001
+                    created_at: '2015-03-06T10:00:34Z'
+                    updated_at: '2015-03-06T10:00:42Z'
+                    channel: EMAIL
+                    status: sent
+                    refunded: false
+                    template_data:
+                      sender: John
+                      subject: Hey Jane!
+                      content: Hey Jane! This is a test
+                    channel_data:
+                      '3': '[email protected]'
+                    price:
+                      amount: 0.01
+                      currency: €
+                - delivery:
+                    id: 54f97ac3a09673c4b5000003
+                    created_at: '2015-03-06T10:00:35Z'
+                    updated_at: '2015-03-06T10:00:44Z'
+                    channel: EMAIL
+                    status: sent
+                    refunded: false
+                    template_data:
+                      sender: John
+                      subject: Hey Jane!
+                      content: Hey Jane! This is a test
+                    channel_data:
+                      '3': '[email protected]'
+                    price:
+                      amount: 0.01
+                      currency: €
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

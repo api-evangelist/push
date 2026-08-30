@@ -1,0 +1,380 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Company API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Company
+paths:
+  /v2/account/{account_id}/company:
+    post:
+      operationId: createCompany
+      summary: Create — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/create
+      x-source-path: /v2/account/{account_id}/company/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the company
+                about_us:
+                  description: About of the company
+                annual_revenue:
+                  description: Annual revenue of the company
+                close_date:
+                  description: Close date of the company
+                url:
+                  description: The webpage url of the company phone
+                street:
+                  description: Street of the company
+                city:
+                  description: City of the company
+                country:
+                  description: Country of the company in ISO-2
+                zip_code:
+                  description: Zip code of the company
+                description:
+                  description: Description of the company
+                fax:
+                  type: number
+                  description: Number of fax of company
+                email:
+                  description: Email of the company
+                industry:
+                  description: Industry type of the company
+                is_public:
+                  description: This company is a public company?
+                number_of_employees:
+                  type: number
+                  description: Number of employees of the company
+                phone_number:
+                  description: Phone number without country code of the company
+                phone_countrycode:
+                  description: Phone country code of the company
+                time_zone:
+                  description: Time zone of the company
+                year_founded:
+                  description: Year founded of the company
+                facebook_page:
+                  description: Facebook page of the company
+                google_plus_page:
+                  description: Google plus page of the company
+                linkedin_page:
+                  description: Linkedin page of the company
+                twitter_page:
+                  description: Twitter page of the company
+                '[custom field]':
+                  description: You can create a custom field to use in every company. Only add the parameter in the json with the name of custom field (no label)
+              required:
+              - name
+            example:
+              name: Google
+              url: https://www.google.es
+              email: '[email protected]'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listCompany
+      summary: List — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/list
+      x-source-path: /v2/account/{account_id}/company/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company name'
+      - name: email
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company email'
+      - name: phone_number
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company phone number'
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company url'
+      - name: industry
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company industry'
+      - name: country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company country'
+      - name: street
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company street'
+      - name: zip_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company zip code'
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company contact_id'
+      - name: '[custom field]'
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: company custom field : https://www.cendyncrm.com/settings/company_custom_fields'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                companies:
+                - id: 550aac3da096734ce5000001
+                  name: Google
+                  url: https://www.google.es
+                  email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/company/{company_id}:
+    get:
+      operationId: showCompany
+      summary: Show — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be showed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateCompany
+      summary: Update — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the company
+                about_us:
+                  description: About of the company
+                annual_revenue:
+                  description: Annual revenue of the company
+                close_date:
+                  description: Close date of the company
+                url:
+                  description: The webpage url of the company phone
+                street:
+                  description: Street of the company
+                city:
+                  description: City of the company
+                country:
+                  description: Country of the company in ISO-2
+                zip_code:
+                  description: Zip code of the company
+                description:
+                  description: Description of the company
+                fax:
+                  type: number
+                  description: Number of fax of company
+                email:
+                  description: Email of the company
+                industry:
+                  description: Industry type of the company
+                is_public:
+                  description: This company is a public company?
+                number_of_employees:
+                  type: number
+                  description: Number of employees of the company
+                phone_number:
+                  description: Phone number without country code of the company
+                phone_countrycode:
+                  description: Phone country code of the company
+                time_zone:
+                  description: Time zone of the company
+                year_founded:
+                  description: Year founded of the company
+                facebook_page:
+                  description: Facebook page of the company
+                google_plus_page:
+                  description: Google plus page of the company
+                linkedin_page:
+                  description: Linkedin page of the company
+                twitter_page:
+                  description: Twitter page of the company
+                '[custom field]':
+                  description: You can create a custom field to use in every company. Only add the parameter in the json with the name of custom field (no label)
+            example:
+              name: Google
+              url: https://www.google.es
+              email: '[email protected]'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteCompany
+      summary: Delete — Company
+      tags:
+      - Company
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/company/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the company to be deleted
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 550aac3da096734ce5000001
+                name: Google
+                url: https://www.google.es
+                email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

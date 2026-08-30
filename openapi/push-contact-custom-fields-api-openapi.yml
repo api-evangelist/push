@@ -1,0 +1,225 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Contact Custom fields API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Contact Custom fields
+paths:
+  /v2/account/{account_id}/custom_fields:
+    post:
+      operationId: createContactCustomFields
+      summary: Create — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                type:
+                  type: number
+                  description: 'Custom field type [ boolean, date, number, string, selectable_options]. By default is: string'
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+              required:
+              - name
+              - label
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+              type: string
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listContactCustomFields
+      summary: List — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: boolean
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: number
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/custom_fields/{custom_id}:
+    put:
+      operationId: updateContactCustomFields
+      summary: Update — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                selectable_options:
+                  description: Array with strings, only if the type is selectable_options
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the contact facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteContactCustomFields
+      summary: Delete — Contact Custom fields
+      tags:
+      - Contact Custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/custom_fields/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the contact facebook id
+                type: string
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

@@ -1,0 +1,361 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Purchase API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Purchase
+paths:
+  /v2/account/{account_id}/contact/{contact_id}/purchases:
+    post:
+      operationId: createPurchase
+      summary: Create — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaign_id:
+                  description: Id of the campaign
+                products[UUID]:
+                  description: Universally unique identifier (UUID) of the product
+                products[status]:
+                  description: 'Status of purchases of the product, please use only the following status: add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled, no_show, no_paid, check_in, check_out, reserved, confirmed'
+                products[transaction_code]:
+                  description: Transaction code of the product purchase of your backend
+                products[redeem_coupon_code]:
+                  description: Coupon code used in the purchase
+                products[name]:
+                  description: Name of the purchase transaction
+                products[description]:
+                  description: Description of the purchase transaction
+                products[price]:
+                  description: Price of the purchase transaction
+                products[currency]:
+                  description: Currency of the purchase transaction
+                products[Your variable product]:
+                  description: 'You can create a variable product and use it within your API request: ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - products[UUID]
+              - products[price]
+              - products[currency]
+            example:
+              campaign_id: 57680042edb7aad202000005
+              products:
+              - status: purchase
+                transaction_code: 4230923jda023230
+                UUID: '3210938120313912312'
+                name: Iphone6
+                price: 748.45
+                currency: EUR
+                description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2016-06-22T10:37:34Z'
+                  id: 576a6a6eedb7aab9c2000006
+                  status: purchase
+                  contact_id: 57680042edb7aad202000001
+                  campaign_id: 57680042edb7aad202000005
+                  product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases/{purchase_id}:
+    put:
+      operationId: updatePurchase
+      summary: Update — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: purchase_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the purchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                campaign_id:
+                  description: Id of the campaign
+                status:
+                  description: 'Status of the purchase. Only the following status are allowed: add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled, no_show, no_paid, check_in, check_out, reserved, confirmed'
+                redeem_coupon_code:
+                  description: Coupon code used in the purchase
+                transaction_code:
+                  description: Transaction code of the purchase of your backend
+                name:
+                  description: Name of the purchase transaction
+                description:
+                  description: Description of the purchase transaction
+                price:
+                  description: Price of the purchase transaction
+                currency:
+                  description: Currency of the purchase transaction
+                error_message:
+                  description: Custom error message if purchase failed
+            example:
+              campaign_id: 57680042edb7aad202000005
+              status: purchase
+              transaction_code: 4230923jda023230
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                created_at: '2016-06-22T10:37:34Z'
+                id: 576a6a6eedb7aab9c2000006
+                status: purchase
+                contact_id: 57680042edb7aad202000001
+                campaign_id: 57680042edb7aad202000005
+                product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deletePurchase
+      summary: Delete — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: purchase_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of the purchase
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                created_at: '2016-06-22T10:37:34Z'
+                id: 576a6a6eedb7aab9c2000006
+                status: purchase
+                contact_id: 57680042edb7aad202000001
+                campaign_id: 57680042edb7aad202000005
+                product_UUID: '3210938120313912312'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases:
+    get:
+      operationId: listPurchase
+      summary: List — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: External contact user ID'
+      - name: product_UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Product UUID'
+      - name: transaction_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Transaction code'
+      - name: currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Currency in ISO 4217 Code'
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Status, please use only the following status: add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled, no_show, no_paid, check_in, check_out, reserved, confirmed'
+      - name: product_custom_field
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Any product custom field https://www.cendyncrm.com/settings/product_custom_fields'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2020-08-28T10:29:19.250Z'
+                  updated_at: '2020-08-28T10:30:28.395Z'
+                  id: 5f48dc7ef0fcef97a1d7074d
+                  status: purchase
+                  contact_id: 5f437b5ff0fcef60b273c7b9
+                  campaign_id: 5b8f9ff9f70366eff600000b
+                  transaction_code: 4230923jda023230
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  price_EUR: 748.45
+                  product_UUID: '3210938120313912312'
+                  check_in: '2020-09-27T22:00:00.000Z'
+                  check_out: '2020-10-27T23:00:00.000Z'
+                  hotel_id: '23'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/purchases/delete_group:
+    delete:
+      operationId: deleteGroupPurchase
+      summary: Delete Group — Purchase
+      tags:
+      - Purchase
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/purchase/delete_group
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: External contact user ID'
+      - name: product_UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Product UUID'
+      - name: transaction_code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Transaction code'
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: Pushtech Contact ID'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                purchases:
+                - created_at: '2020-08-28T10:29:19.250Z'
+                  updated_at: '2020-08-28T10:30:28.395Z'
+                  id: 5f48dc7ef0fcef97a1d7074d
+                  status: purchase
+                  contact_id: 5f437b5ff0fcef60b273c7b9
+                  campaign_id: 5b8f9ff9f70366eff600000b
+                  transaction_code: 4230923jda023230
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  price_EUR: 748.45
+                  product_UUID: '3210938120313912312'
+                  check_in: '2020-09-27T22:00:00.000Z'
+                  check_out: '2020-10-27T23:00:00.000Z'
+                  hotel_id: '23'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

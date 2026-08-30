@@ -1,0 +1,264 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Sync Data API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Sync Data
+paths:
+  /account/{account_id}/sync_data:
+    post:
+      operationId: createSyncData
+      summary: Create — Sync Data
+      tags:
+      - Sync Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/sync_data/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  description: 'String field to indicate the origin of the Contact(s) and Purchase. Example: “PMS”'
+                options:
+                  description: Options to validate contacts email and receive webhook response information when the request has been processed
+                contacts:
+                  description: Array of contact data. Maximum 1000 contacts per request.
+                purchase:
+                  description: Booking and Stay information for the contacts that are in the same request.
+                options[email_validation[validate]]:
+                  type: boolean
+                  description: 'If true, validate all contact´s emails of the bulk. This service has an extra cost and will use credits from your Cendyn CRM account. If not enough credits the import will be processed without email validation. By default: false'
+                options[email_validation[create_if_invalid]]:
+                  type: boolean
+                  description: 'If true, the contact will be created unless the email is invalid. By default: false'
+                options[email_validation[create_if_no_credit]]:
+                  description: 'If not enough credits the import will be processed without email validation. By default: false'
+                options[webhook[url]]:
+                  description: URL where the webhook will send information
+                options[webhook[contacts_extra_fields]]:
+                  description: 'Array that contain extra fields needed to be sent by the webhook.By default it will be sent by the webhook the following fields: _id, user_id, email, phone_countrycode, phone_number'
+                options[webhook[purchase_extra_fields]]:
+                  description: 'Array that contain extra fields need to be sent by the webhook. By default it will be sent by the webhook the following fields: transaction_code, _id'
+                contacts[name_first]:
+                  description: Name of the contact
+                contacts[name_last]:
+                  description: Last name of the contact
+                contacts[email]:
+                  description: Email of the contact
+                contacts[user_id]:
+                  description: Unique identifier of contact in your backend
+                contacts[phone_countrycode]:
+                  description: 'Country code of the contact phone. Example: “+34”'
+                contacts[phone_number]:
+                  description: Phone number without country code of the contact
+                contacts[phone]:
+                  description: Full phone number with country code of the contact
+                contacts[city]:
+                  description: City of the contact
+                contacts[country]:
+                  description: Country of the contact
+                contacts[region]:
+                  description: Region of the contact
+                contacts[zip]:
+                  description: Zip code of the contact
+                contacts[full_address]:
+                  description: Address of the contact
+                contacts[born_date]:
+                  type: string
+                  format: date-time
+                  description: 'The date of the birthday in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gender]:
+                  description: Gender of the contact (MALE or FEMALE)
+                contacts[language]:
+                  description: 'Language of the contact in ISO-2 format, Example: ES'
+                contacts[facebook_id]:
+                  description: Facebook id of the contact
+                contacts[facebook_friends]:
+                  type: number
+                  description: Number of the friends in facebook of the contact
+                contacts[twitter_id]:
+                  description: Twitter id of the contact
+                contacts[twitter_followers]:
+                  type: number
+                  description: Number of the followers in twitter of the contact
+                contacts[tags]:
+                  description: Array containing tags for this contact
+                contacts[list_subscriptions[list_id]]:
+                  description: Id of audience list
+                contacts[list_subscriptions[subscribed]]:
+                  type: boolean
+                  description: If true, subscribe from this list
+                contacts[channel_subscriptions[channel]]:
+                  description: 'Name of channel. Options: [email, sms, push]'
+                contacts[channel_subscriptions[blacklisted]]:
+                  type: boolean
+                  description: If true, blacklist this channel
+                contacts[gdpr_accept_terms]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted your terms'
+                contacts[gdpr_marketing_consent]:
+                  type: boolean
+                  description: 'Boolean type: If true, the contact accepted marketing consent'
+                contacts[gdpr_date]:
+                  type: string
+                  format: date-time
+                  description: 'Date for GDPR changes in ISO_8601 format, Example: 1990-01-01T00:00:00Z'
+                contacts[gdpr_remote_ip]:
+                  description: 'String type: Contact IP when accepted GDPR'
+                contacts[[custom field]]:
+                  description: You can create a custom field and use in every contact, only add parameter in the json with the name of custom (no label)
+                purchase[campaign_id]:
+                  description: Id of the campaign
+                purchase[UUID]:
+                  description: Universally unique identifier (UUID) of the product
+                purchase[transaction_code]:
+                  description: Transaction code of the product purchase of your backend (unique)
+                purchase[price]:
+                  description: Price of the purchase transaction
+                purchase[currency]:
+                  description: Currency of the purchase transaction in ISO 4217 format. For example USD, EUR
+                purchase[status]:
+                  description: 'Status of purchases of the product, please use only the following status: add_cart, purchase, remove_cart, product_view, product_refund, purchase_failed, canceled, no_show, no_paid, check_in, check_out, reserved, confirmed'
+                purchase[redeem_coupon_code]:
+                  description: Coupon code used in the purchase
+                purchase[name]:
+                  description: Name of the purchase transaction
+                purchase[description]:
+                  description: Description of the purchase transaction
+                purchase[Purchase custom field]:
+                  description: 'You can create Purchase custom field with a specific type and use it within your API request: ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - origin
+              - purchase[UUID]
+              - purchase[transaction_code]
+              - purchase[price]
+              - purchase[currency]
+            example:
+              origin: PMS
+              options:
+                email_validation:
+                  validate: true
+                  create_if_invalid: true
+                  create_if_no_credit: true
+                webhook:
+                  url: https://xxxxxx.xxx
+                  contacts_extra_fields:
+                  - name_first
+                  purchase_extra_fields:
+                  - price
+              contacts:
+              - email: '[email protected]'
+                name_first: Jhon
+                name_last: Doe
+                user_id: '[email protected]'
+                born_date: '1990-01-01T00:00:00Z'
+                language: EN
+                country: Germany
+                city: Berlin
+                gender: male
+              purchase:
+                transaction_code: transaction_code_xxxx
+                currency: USD
+                price: 340
+                product_uuid: uuid_product_xxxxx
+                status: check_in
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: xxxxxxxxxxxxxxxxxxxxxxxx
+                number_of_contacts: 1
+                number_of_purchase: 1
+                validate_emails: true
+                contacts_extra_fields:
+                - name_first
+                purchase_extra_fields:
+                - price
+                webhook_url: https://xxxxxx.xxx
+                status: queued
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /account/{account_id}/sync_data/{id}:
+    get:
+      operationId: showSyncData
+      summary: Show — Sync Data
+      tags:
+      - Sync Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/sync_data/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: SyncData ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: xxxxxxxxxxxxxxxxxxxxxxxx
+                number_of_contacts: 1
+                number_of_purchase: 1
+                validate_emails: true
+                contacts_extra_fields:
+                - name_first
+                purchase_extra_fields:
+                - price
+                webhook_url: https://xxxxxx.xxx
+                status: queued
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

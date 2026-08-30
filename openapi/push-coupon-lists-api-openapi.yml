@@ -1,0 +1,342 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Coupon lists API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Coupon lists
+paths:
+  /v2/account/{account_id}/coupon_lists:
+    post:
+      operationId: createCouponLists
+      summary: Create — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                codes:
+                  description: 'Array with codes, Max: 500'
+                low_limit_notification:
+                  description: Send notification email if only x coupons left
+                notification_email:
+                  description: Email to send notification.
+              required:
+              - name
+              - codes
+            example:
+              name: Coupon list
+              codes:
+              - code_1
+              - code_2
+              low_limit_notification: 10
+              notification_email: '[email protected]'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listCouponLists
+      summary: List — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Page to retrieve
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Items per page: Max:100 , default:50'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_lists:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+                - _id: 5853d8c2edb7aacab9000046
+                  name: Coupon list 2
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+                - _id: 5853d8c2edb7aacab9000047
+                  name: Coupon list 3
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/coupon_lists/{coupon_list_id}:
+    get:
+      operationId: showCouponLists
+      summary: Show — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateCouponLists
+      summary: Update — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codes:
+                  description: Array with codes, Max:500
+                low_limit_notification:
+                  description: Send notification email if only x coupons left
+                notification_email:
+                  description: Email to send notification.
+            example:
+              codes:
+              - code_4
+              - code_5
+              low_limit_notification: 10
+              notification_email: '[email protected]'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 4
+                  used_coupons: 0
+                  pending_coupons: 4
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteCouponLists
+      summary: Delete — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: coupon_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of coupon list
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 2
+                  redeem_coupons: 0
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/coupon_lists/redeem:
+    put:
+      operationId: redeemCouponLists
+      summary: Redeem — Coupon lists
+      tags:
+      - Coupon lists
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/coupons/redeem
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  description: Coupon code redeemed
+                contact_id:
+                  description: Contact ID
+                campaign_id:
+                  description: Campaign ID
+              required:
+              - code
+            example:
+              code: code_4
+              contact_id: ':contact_id:'
+              campaign_id: ':campaign_id:'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                coupon_list:
+                  _id: 5853d8c2edb7aacab9000045
+                  name: Coupon list
+                  total_coupons: 2
+                  used_coupons: 0
+                  pending_coupons: 1
+                  redeem_coupons: 1
+                  low_limit_notification: 10
+                  notification_email: '[email protected]'
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

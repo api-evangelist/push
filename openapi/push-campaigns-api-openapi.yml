@@ -1,0 +1,260 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Campaigns API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Campaigns
+paths:
+  /v2/account/{account_id}/campaigns/{campaign_id}:
+    get:
+      operationId: showCampaigns
+      summary: Show — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the campaign
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                campaign:
+                  id: 61f25c46d1152010651ddd73
+                  name: Thienphuc_Sc
+                  created_at: '2022-01-27T08:48:06.960Z'
+                  updated_at: '2022-01-27T09:10:57.821Z'
+                  description: Thienphuc_Sc
+                  status: completed
+                  schedule_type: scheduled
+                  time_zone: Hanoi
+                  start_at: '2022-01-27T16:05:00.000Z'
+                  filters:
+                  - id: 5e8456aaf703666bc9000009
+                    name: danang
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 1
+                      clicked: 1
+                      unsubscribed: 1
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/campaigns:
+    get:
+      operationId: listCampaigns
+      summary: List — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/list
+      x-source-path: /v2/account/{account_id}/campaigns/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: status possible values [draft, scheduled, inprogress, completed, ongoing, paused]'
+      - name: schedule_type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Search by: schedule_type possible values [now, scheduled, automation_trigger, automation_cron]'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'limit of number campaigns returns, default: 200'
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'creation_date order asc or desc, default: desc'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                campaigns:
+                - id: 61fb9d11d11520261bb5436c
+                  name: Cai_Im1
+                  created_at: '2022-02-03T09:14:57.188Z'
+                  updated_at: '2022-02-03T09:26:46.953Z'
+                  description: Cai_Im1
+                  status: completed
+                  schedule_type: now
+                  time_zone: Jakarta
+                  send_date: '2022-02-03T09:19:06.330Z'
+                  filters:
+                  - id: 5e53ee3bf703664f9e000008
+                    name: dantoc
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 0
+                      clicked: 0
+                      unsubscribed: 0
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+                - id: 61fb9c65d11520261bb54344
+                  name: Cai_Im
+                  created_at: '2022-02-03T09:12:05.906Z'
+                  updated_at: '2022-02-03T09:18:02.837Z'
+                  description: Cai_Im
+                  status: completed
+                  schedule_type: now
+                  time_zone: Jakarta
+                  send_date: '2022-02-03T09:12:11.596Z'
+                  filters:
+                  - id: 5e53ee3bf703664f9e000008
+                    name: dantoc
+                  reports:
+                    global:
+                      totals: 5
+                      sent: 0
+                      delivered: 5
+                      undelivered: 0
+                      pending: 0
+                      opened: 0
+                      clicked: 0
+                      unsubscribed: 0
+                    purchases:
+                      total_purchases: 0
+                      total_products: 0
+                      total_contacts: 0
+                      total_add_cart: 0
+                      total_remove_cart: 0
+                      total_product_view: 0
+                      total_product_refund: 0
+                      total_purchase_failed: 0
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/campaigns/{campaign_id}/message/contact/{contact_id}:
+    get:
+      operationId: previewMessageCampaigns
+      summary: Preview message — Campaigns
+      tags:
+      - Campaigns
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/campaigns/preview_message
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the campaign
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the contact
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                message:
+                  campaign_id: 58ef92a5edb7aa101c00005b
+                  contact_id: 58ef468dedb7aa5131000034
+                  channel: EMAIL
+                  delivery_id: 58ef92b4edb7aa3947000002
+                  template_data:
+                    sender: test <[email protected]>
+                    content: <html><body></body></html>
+                    template_email_id: 58bee1f5edb7aa6e5700000b
+                    content_template_email_id: null
+                    reply_to: ''
+                    subject: test
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

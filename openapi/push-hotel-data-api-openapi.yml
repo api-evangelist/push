@@ -1,0 +1,309 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Hotel Data API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Hotel Data
+paths:
+  /v2/account/{account_id}/hotel_data/{uuid}/add_language:
+    put:
+      operationId: addLanguageHotelData
+      summary: Add language — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/add_language
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  description: 'Language of the hotel in ISO-2 format, Example: ES'
+                data:
+                  description: JSON with custom fields for hotel data
+                data[Your custom hotel data field]:
+                  description: 'You can create a custom field hotel data and use it within your API request: ''https://www.cendyncrm.com/settings/hotel_data_custom_fields'''
+              required:
+              - language
+              - data
+              - data[Your custom hotel data field]
+            example:
+              language: FR
+              data:
+                hotel_name: Nom de l'hôtel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                    FR: Nom de l'hôtel
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data:
+    post:
+      operationId: createHotelHotelData
+      summary: Create hotel — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  description: Unique identifier for hotel
+                name:
+                  description: Hotel Name
+                items:
+                  description: Array with data for different languages
+                items[language]:
+                  description: 'Language of the hotel in ISO-2 format, Example: ES'
+                items[data]:
+                  description: JSON with custom fields for hotel data
+                items[data][Your custom hotel data field]:
+                  description: 'You can create a custom field hotel data and use it within your API request: ''https://www.cendyncrm.com/settings/hotel_data_custom_fields'''
+              required:
+              - uuid
+              - name
+              - items
+              - items[language]
+              - items[data]
+            example:
+              uuid: hotel_2
+              name: Hotel 2
+              items:
+              - language: ES
+                data:
+                  hotel_name: Nombre del hotel
+              - language: DE
+                data:
+                  hotel_name: Name des Hotels
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listHotelData
+      summary: List — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotels:
+                - name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                - name: Hotel 1
+                  uuid: hotel_1
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data/{uuid}:
+    delete:
+      operationId: deleteHotelData
+      summary: Delete — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: UUID of the hotel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: showHotelData
+      summary: Show — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+                    FR: Nom de l'hôtel
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data/{uuid}/remove_language:
+    delete:
+      operationId: removeLanguageHotelData
+      summary: Remove language — Hotel Data
+      tags:
+      - Hotel Data
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data/remove_language
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier for hotel
+      - name: language
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'Language of the hotel in ISO-2 format, Example: ES'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                hotel_data:
+                  name: Hotel 2
+                  uuid: hotel_2
+                  hotel_name:
+                    ES: Nombre del hotel
+                    DE: Name des Hotels
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

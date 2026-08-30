@@ -1,0 +1,227 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Hotel Data custom fields API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Hotel Data custom fields
+paths:
+  /v2/account/{account_id}/hotel_data_custom_fields:
+    post:
+      operationId: createHotelDataCustomFields
+      summary: Create — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/create
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name for the field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                category:
+                  description: Category for the custom field.
+                is_url:
+                  description: 'If the custom field is a url,set to: true'
+              required:
+              - name
+            example:
+              name: facebook_id
+              label: ID on Facebook
+              category: Social
+              description: This field save the hotel data facebook id
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listHotelDataCustomFields
+      summary: List — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/list
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                custom_fields:
+                - _id: 5853d8c2edb7aacab9000045
+                  name: test_field_1
+                  label: Test Field 1
+                  description: Field 1 description
+                  type: string
+                  is_url: false
+                - _id: 5853d8c2edb7aacab9000046
+                  name: test_field_2
+                  label: Test Field 2
+                  description: Field 2 description
+                  type: string
+                  is_url: true
+                - _id: 5853d8c2edb7aacab9000047
+                  name: test_field_3
+                  label: Test Field 3
+                  description: Field 3 description
+                  type: string
+                  is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/hotel_data_custom_fields/{custom_id}:
+    put:
+      operationId: updateHotelDataCustomFields
+      summary: Update — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  description: Category for the custom field.
+                label:
+                  description: Human friendly label for the field.
+                description:
+                  description: Description for the custom field.
+                is_url:
+                  description: 'If the custom field is an url, set it to: true'
+            example:
+              label: ID on Facebook
+              category: Social
+              description: This field save the hotel data facebook id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteHotelDataCustomFields
+      summary: Delete — Hotel Data custom fields
+      tags:
+      - Hotel Data custom fields
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/hotel_data_custom_fields/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: custom_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Id of custom
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id: 5853d8c2edb7aacab9000045
+                category: Social
+                name: facebook_id
+                label: ID on Facebook
+                description: This field save the hotel data facebook id
+                type: string
+                is_url: false
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

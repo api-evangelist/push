@@ -1,0 +1,364 @@
+openapi: 3.2.0
+info:
+  title: Cendyn CRM (PUSHTech) REST Product API
+  version: v2
+  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
+
+
+    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  contact:
+    name: Cendyn
+    url: https://www.cendyn.com/contact-us/
+  termsOfService: https://www.cendyn.com/terms-of-use/
+  x-provenance:
+    publisher: API Evangelist
+    method: derived
+    derived_from: https://developers.cendyncrm.com/api/docs
+    provider_published_openapi: false
+    note: NOT published by Cendyn. Derived from the provider's public HTML API reference; verify against the live docs before production use.
+servers:
+- url: https://api.eu.cendyncrm.com
+  description: EU data center
+- url: https://api.us.cendyncrm.com
+  description: US data center
+security:
+- accountToken: []
+tags:
+- name: Product
+paths:
+  /v2/account/{account_id}/products:
+    post:
+      operationId: createProduct
+      summary: Create — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/create
+      x-source-path: /v2/account/{account_id}/products/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                UUID:
+                  description: Unique identifier of the product
+                name:
+                  description: Name of the product
+                price:
+                  description: Price of the product
+                currency:
+                  description: Currency of the product
+                description:
+                  description: Description of the product
+                url:
+                  description: The external link of the product
+                image_url:
+                  description: The external image link of the product
+                '''Your variable product''':
+                  description: 'You can create a variable product and use it within your API request: ''https://www.cendyncrm.com/settings/product_custom_fields'''
+              required:
+              - UUID
+              - name
+              - price
+              - currency
+            example:
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+              url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+              image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    get:
+      operationId: listProduct
+      summary: List — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/list
+      x-source-path: /v2/account/{account_id}/products/
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Unique identifier of the product
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Name of the product
+      - name: price
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Price of the product
+      - name: currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Currency of the product
+      - name: description
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Description of the product
+      - name: store
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Store of the product
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The external link of the product
+      - name: image_url
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The external image link of the product
+      - name: updated_since
+        in: query
+        required: false
+        schema:
+          type: string
+        description: updated since inclusive
+      - name: updated_until
+        in: query
+        required: false
+        schema:
+          type: string
+        description: updated until inclusive
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        description: max number of products returned, default max set to 200
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+        description: creation desc or asc order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                products:
+                - UUID: '3210938120313912312'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+  /v2/account/{account_id}/products/{UUID}:
+    get:
+      operationId: showProduct
+      summary: Show — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/show
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    put:
+      operationId: updateProduct
+      summary: Update — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/update
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Name of the product
+                price:
+                  description: Price of the product
+                currency:
+                  description: Currency of the product
+                description:
+                  description: Description of the product
+                url:
+                  description: The external link of the product
+                image_url:
+                  description: The external image link of the product
+                '''Your variable product''':
+                  description: 'You can create a variable product and use it within your API request: ''https://www.cendyncrm.com/settings/product_custom_fields'''
+            example:
+              UUID: '3210938120313912312'
+              name: Iphone6
+              price: 748.45
+              currency: EUR
+              description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+              url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+              image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+    delete:
+      operationId: deleteProduct
+      summary: Delete — Product
+      tags:
+      - Product
+      externalDocs:
+        description: Cendyn CRM API reference
+        url: https://developers.cendyncrm.com/api/docs/product/delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Your account unique identifier to access API.
+      - name: UUID
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Unique identifier of the product
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                product:
+                  UUID: '3210938120313912312'
+                  created_at: '2016-06-22T14:24:07Z'
+                  updated_at: '2016-06-22T14:24:07Z'
+                  name: Iphone6
+                  price: 748.45
+                  currency: EUR
+                  description: 3D Touch. 12MP photos. 4K video.One powerful phone.
+                  store: web
+                  type: smartphone
+                  color: gold
+                  size: 5,5 inch
+                  url: http://www.apple.com/shop/buy-iphone/iphone6s/5.5-inch-display-128gb-gold
+                  image_url: http://store.storeimages.cdn-apple.com/4973/as-images.apple.com/is/image/AppleInc/aos/published/images/i/ph/iphone6s/plus/iphone6s-plus-gold-select-2015?wid=470&hei=556&fmt=png-alpha&qlt=95&.v=7DNkd1
+        '401':
+          description: 'Unauthorized — missing or invalid `Authorization: Token token=...` header.'
+components:
+  securitySchemes:
+    accountToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Account token authentication. Send `Authorization: Token token={account.secret}`. Some operations require the account master secret (`Token token={account.master_secret}`).'
+externalDocs:
+  description: Cendyn CRM Developers Central
+  url: https://developers.cendyncrm.com/api

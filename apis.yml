@@ -269,6 +269,8 @@ apis:
   humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
   tags:
+  - Contact Custom Fields
+  tags_raw:
   - Contact Custom fields
   properties:
   - type: OpenAPI
@@ -299,6 +301,8 @@ apis:
   humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
   tags:
+  - Coupon Lists
+  tags_raw:
   - Coupon lists
   properties:
   - type: OpenAPI
@@ -450,6 +454,8 @@ apis:
   humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
   tags:
+  - Product Custom Fields
+  tags_raw:
   - Product custom fields
   properties:
   - type: OpenAPI

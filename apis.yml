@@ -1,20 +1,18 @@
 aid: push
 name: Push
-description: >-
-  Push (PUSHTech, now operating as Cendyn CRM after its acquisition by Cendyn) is a CRM and
-  customer data platform specialised in hospitality — the guest journey for hotels — with
-  additional use in retail, ecommerce and marketplace. The platform unifies the guest database
-  and orchestrates pre-stay, during-stay and post-stay communication across email, SMS and
-  web/app push. Its token-authenticated REST API exposes 67 operations across 15 resources
-  (contacts and contact custom fields, companies, products, purchases, coupon lists, hotel data,
-  audience lists, campaigns, deliveries, account balance and a bulk sync-data ingest) from two
-  independent data centers, api.eu.cendyncrm.com and api.us.cendyncrm.com. An HMAC-signed webhook
-  surface publishes five event groups — activities, deliveries, contacts, bulk contacts and
-  incoming SMS — and a first-party JavaScript Web SDK handles browser tracking and web push. The
-  developer portal moved from developers.pushtech.com to developers.cendyncrm.com without a
-  redirect; the old hostnames no longer resolve. Cendyn CRM publishes no OpenAPI, no AsyncAPI, no
-  MCP server, no agent card and no /.well-known/ documents; the machine-readable artifacts in
-  this repo are derived by API Evangelist from the provider's own published HTML reference.
+description: Push (PUSHTech, now operating as Cendyn CRM after its acquisition by Cendyn) is a CRM and
+  customer data platform specialised in hospitality — the guest journey for hotels — with additional use
+  in retail, ecommerce and marketplace. The platform unifies the guest database and orchestrates pre-stay,
+  during-stay and post-stay communication across email, SMS and web/app push. Its token-authenticated
+  REST API exposes 67 operations across 15 resources (contacts and contact custom fields, companies, products,
+  purchases, coupon lists, hotel data, audience lists, campaigns, deliveries, account balance and a bulk
+  sync-data ingest) from two independent data centers, api.eu.cendyncrm.com and api.us.cendyncrm.com.
+  An HMAC-signed webhook surface publishes five event groups — activities, deliveries, contacts, bulk
+  contacts and incoming SMS — and a first-party JavaScript Web SDK handles browser tracking and web push.
+  The developer portal moved from developers.pushtech.com to developers.cendyncrm.com without a redirect;
+  the old hostnames no longer resolve. Cendyn CRM publishes no OpenAPI, no AsyncAPI, no MCP server, no
+  agent card and no /.well-known/ documents; the machine-readable artifacts in this repo are derived by
+  API Evangelist from the provider's own published HTML reference.
 url: https://raw.githubusercontent.com/api-evangelist/push/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -49,7 +47,7 @@ accessModel:
   method: searched
 specificationVersion: '0.23'
 created: '2026-07-17'
-modified: '2026-08-13'
+modified: '2026-09-16'
 image: https://pushtech.com/favicon.ico
 tags:
 - Company
@@ -389,8 +387,7 @@ apis:
     url: agentic-access/push-agentic-access.yml
 - aid: push:push-hotel-data-custom-fields-api
   name: Push Hotel Data custom fields API
-  description: >-
-    The Hotel Data custom fields API from Push — 2 operation(s) for hotel data custom fields.
+  description: The Hotel Data custom fields API from Push — 2 operation(s) for hotel data custom fields.
   humanURL: https://developers.cendyncrm.com/api/reference
   baseURL: https://api.eu.cendyncrm.com
   tags:
@@ -564,7 +561,7 @@ common:
 - type: PrivacyPolicy
   url: https://pushtech.com/privacy_policy
 - type: OpenAPI
-  url: openapi/push-cendyn-crm-openapi.yml
+  url: openapi/_original/push-cendyn-crm-openapi.yml
 - type: Overlay
   url: overlays/push-cendyn-crm-overlay.yaml
 - type: AsyncAPI
@@ -606,29 +603,57 @@ common:
 - type: DomainSecurity
   url: security/push-domain-security.yml
 x-pointers-deliberately-absent:
-  note: >-
-    Recorded so a later pass does not "fix" these by adding a pointer. Each of the following was
-    probed on 2026-08-13 and MISSED; the artifact documenting the absence exists, but no
-    common[].type pointer is emitted, because the pointer would assert that the PROVIDER serves
-    that surface.
+  note: Recorded so a later pass does not "fix" these by adding a pointer. Each of the following was probed
+    on 2026-08-13 and MISSED; the artifact documenting the absence exists, but no common[].type pointer
+    is emitted, because the pointer would assert that the PROVIDER serves that surface.
   absent:
-  - {type: WellKnown, reason: 'Every /.well-known/ path 404s on both API hosts and returns an HTML soft-404 shell on the portal host.', artifact: well-known/push-well-known.yml}
-  - {type: SecurityTxt, reason: 'No security.txt served on any host.', artifact: well-known/push-well-known.yml}
-  - {type: AgentCard, reason: '/.well-known/agent-card.json and /.well-known/agent.json 404 on both API hosts; the portal and marketing hosts answer 200 with HTML, which is not a card. No a2a/ artifact written.'}
-  - {type: MCPServer, reason: 'No MCP server exists. mcp/push-mcp.yml carries deployment.mode = none and a CANDIDATE tool list derived by API Evangelist. Emitting MCPServer would credit an agent surface nobody ships.', artifact: mcp/push-mcp.yml}
-  - {type: Idempotency, reason: 'No idempotency key, header or retry contract on any of the 67 operations.', artifact: conventions/push-conventions.yml}
-  - {type: StatusPage, reason: 'No status page. status.cendyncrm.com does not resolve; status.cendyn.com 301s to a maintenance holding page.', artifact: lifecycle/push-lifecycle.yml}
-  - {type: Deprecation, reason: 'No deprecation policy, no Sunset/Deprecation header support, no deprecated operations.', artifact: lifecycle/push-lifecycle.yml}
-  - {type: Security, reason: 'No vulnerability disclosure policy, security.txt, bug bounty or security page found on any readable host.'}
-  - {type: TrustCenter, reason: 'No trust centre found. trust.cendyn.com 301s to a maintenance holding page.'}
-  - {type: Compliance, reason: 'No SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP claim published on any readable host. www.cendyn.com is behind a Cloudflare bot challenge and could not be read.'}
-  - {type: ChangeLog, reason: 'No dated changelog or release notes anywhere on the developer portal.'}
-  - {type: Pricing, reason: 'No pricing page. Sales-gated: Request Demo / Contact only.', artifact: plans/push-plans-pricing.yml}
-  - {type: Roadmap, reason: 'No public roadmap.'}
-  - {type: Postman, reason: 'No first-party Postman collection or workspace found.'}
-  - {type: CLI, reason: 'No first-party CLI.'}
-  - {type: Sandbox, reason: 'No sandbox, test mode, test credentials or magic test values documented.'}
-  - {type: OAuthScopes, reason: 'No OAuth. Static account token only, with no scope vocabulary.'}
+  - type: WellKnown
+    reason: Every /.well-known/ path 404s on both API hosts and returns an HTML soft-404 shell on the
+      portal host.
+    artifact: well-known/push-well-known.yml
+  - type: SecurityTxt
+    reason: No security.txt served on any host.
+    artifact: well-known/push-well-known.yml
+  - type: AgentCard
+    reason: /.well-known/agent-card.json and /.well-known/agent.json 404 on both API hosts; the portal
+      and marketing hosts answer 200 with HTML, which is not a card. No a2a/ artifact written.
+  - type: MCPServer
+    reason: No MCP server exists. mcp/push-mcp.yml carries deployment.mode = none and a CANDIDATE tool
+      list derived by API Evangelist. Emitting MCPServer would credit an agent surface nobody ships.
+    artifact: mcp/push-mcp.yml
+  - type: Idempotency
+    reason: No idempotency key, header or retry contract on any of the 67 operations.
+    artifact: conventions/push-conventions.yml
+  - type: StatusPage
+    reason: No status page. status.cendyncrm.com does not resolve; status.cendyn.com 301s to a maintenance
+      holding page.
+    artifact: lifecycle/push-lifecycle.yml
+  - type: Deprecation
+    reason: No deprecation policy, no Sunset/Deprecation header support, no deprecated operations.
+    artifact: lifecycle/push-lifecycle.yml
+  - type: Security
+    reason: No vulnerability disclosure policy, security.txt, bug bounty or security page found on any
+      readable host.
+  - type: TrustCenter
+    reason: No trust centre found. trust.cendyn.com 301s to a maintenance holding page.
+  - type: Compliance
+    reason: No SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP claim published on any readable host. www.cendyn.com
+      is behind a Cloudflare bot challenge and could not be read.
+  - type: ChangeLog
+    reason: No dated changelog or release notes anywhere on the developer portal.
+  - type: Pricing
+    reason: 'No pricing page. Sales-gated: Request Demo / Contact only.'
+    artifact: plans/push-plans-pricing.yml
+  - type: Roadmap
+    reason: No public roadmap.
+  - type: Postman
+    reason: No first-party Postman collection or workspace found.
+  - type: CLI
+    reason: No first-party CLI.
+  - type: Sandbox
+    reason: No sandbox, test mode, test credentials or magic test values documented.
+  - type: OAuthScopes
+    reason: No OAuth. Static account token only, with no scope vocabulary.
 x-enrichment:
   date: '2026-08-13'
   status: enriched

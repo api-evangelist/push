@@ -2,10 +2,7 @@ openapi: 3.2.0
 info:
   title: Cendyn CRM (PUSHTech) REST Coupon lists API
   version: v2
-  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
-
-
-    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  description: Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform.
   contact:
     name: Cendyn
     url: https://www.cendyn.com/contact-us/
@@ -24,14 +21,14 @@ servers:
 security:
 - accountToken: []
 tags:
-- name: Coupon lists
+- name: Coupon Lists
 paths:
   /v2/account/{account_id}/coupon_lists:
     post:
       operationId: createCouponLists
       summary: Create — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/create
@@ -88,7 +85,7 @@ paths:
       operationId: listCouponLists
       summary: List — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/list
@@ -149,7 +146,7 @@ paths:
       operationId: showCouponLists
       summary: Show — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/show
@@ -187,7 +184,7 @@ paths:
       operationId: updateCouponLists
       summary: Update — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/update
@@ -244,7 +241,7 @@ paths:
       operationId: deleteCouponLists
       summary: Delete — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/delete
@@ -283,7 +280,7 @@ paths:
       operationId: redeemCouponLists
       summary: Redeem — Coupon lists
       tags:
-      - Coupon lists
+      - Coupon Lists
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/coupons/redeem

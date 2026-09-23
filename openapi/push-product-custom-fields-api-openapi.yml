@@ -2,10 +2,7 @@ openapi: 3.2.0
 info:
   title: Cendyn CRM (PUSHTech) REST Product custom fields API
   version: v2
-  description: 'Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform. Manage account balance, contacts and contact custom fields, companies, products, coupon lists, purchases, hotel data, audience lists and campaigns, and send email, SMS and push deliveries.
-
-
-    This document was DERIVED by API Evangelist from the provider''s own published, server-rendered API reference at https://developers.cendyncrm.com/api/docs (Apitome / rspec_api_documentation). Cendyn CRM does not publish an OpenAPI document; every path, HTTP method, parameter name, parameter description and example payload here is copied verbatim from that reference. Nothing was invented.'
+  description: Token-authenticated REST API for the Cendyn CRM (formerly PUSHTech) hospitality CRM / CDP platform.
   contact:
     name: Cendyn
     url: https://www.cendyn.com/contact-us/
@@ -24,14 +21,14 @@ servers:
 security:
 - accountToken: []
 tags:
-- name: Product custom fields
+- name: Product Custom Fields
 paths:
   /v2/account/{account_id}/product_custom_fields:
     post:
       operationId: createProductCustomFields
       summary: Create — Product custom fields
       tags:
-      - Product custom fields
+      - Product Custom Fields
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/product_custom_fields/create
@@ -89,7 +86,7 @@ paths:
       operationId: listProductCustomFields
       summary: List — Product custom fields
       tags:
-      - Product custom fields
+      - Product Custom Fields
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/product_custom_fields/list
@@ -129,7 +126,7 @@ paths:
       operationId: updateProductCustomFields
       summary: Update — Product custom fields
       tags:
-      - Product custom fields
+      - Product Custom Fields
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/product_custom_fields/update
@@ -183,7 +180,7 @@ paths:
       operationId: deleteProductCustomFields
       summary: Delete — Product custom fields
       tags:
-      - Product custom fields
+      - Product Custom Fields
       externalDocs:
         description: Cendyn CRM API reference
         url: https://developers.cendyncrm.com/api/docs/product_custom_fields/delete

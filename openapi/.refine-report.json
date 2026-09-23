@@ -1,0 +1,48 @@
+{
+  "provider": "push",
+  "sources": [
+    "_original/push-cendyn-crm-openapi.yml"
+  ],
+  "outputs": [
+    "push-account-api-openapi.yml",
+    "push-audience-list-api-openapi.yml",
+    "push-campaigns-api-openapi.yml",
+    "push-company-api-openapi.yml",
+    "push-company-custom-fields-api-openapi.yml",
+    "push-contact-api-openapi.yml",
+    "push-contact-custom-fields-api-openapi.yml",
+    "push-coupon-lists-api-openapi.yml",
+    "push-deliveries-api-openapi.yml",
+    "push-hotel-data-api-openapi.yml",
+    "push-hotel-data-custom-fields-api-openapi.yml",
+    "push-product-api-openapi.yml",
+    "push-product-custom-fields-api-openapi.yml",
+    "push-purchase-api-openapi.yml",
+    "push-sync-data-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "push-cendyn-crm-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "push-account-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-audience-list-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-campaigns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-company-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-company-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-contact-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-contact-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-coupon-lists-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-deliveries-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-hotel-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-hotel-data-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-product-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-product-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-purchase-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "push-sync-data-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

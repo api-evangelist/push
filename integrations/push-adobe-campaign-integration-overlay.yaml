@@ -1,0 +1,41 @@
+# DERIVED by build-integration-preconfigs.py (roadmap#949). Overlay on the PARTNER's contract:
+# where adobe-campaign's enum names push, and what that value is.
+overlay: 1.0.0
+info:
+  title: push as a rail in adobe-campaign's contract
+  version: 1.0.0
+extends: https://raw.githubusercontent.com/api-evangelist/adobe-campaign/refs/heads/main/openapi/adobe-campaign-profileandservices-api-openapi.yml
+actions:
+- target: $.components.schemas.ServiceCreate.properties.messageType
+  update:
+    x-apievangelist-integration:
+      values:
+        push:
+          provider: push
+          relationship: rail
+          evidence: https://github.com/api-evangelist/adobe-campaign/blob/main/openapi/adobe-campaign-profileandservices-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.components.schemas.Service.properties.messageType
+  update:
+    x-apievangelist-integration:
+      values:
+        push:
+          provider: push
+          relationship: rail
+          evidence: https://github.com/api-evangelist/adobe-campaign/blob/main/openapi/adobe-campaign-profileandservices-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.components.schemas.ServiceUpdate.properties.messageType
+  update:
+    x-apievangelist-integration:
+      values:
+        push:
+          provider: push
+          relationship: rail
+          evidence: https://github.com/api-evangelist/adobe-campaign/blob/main/openapi/adobe-campaign-profileandservices-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py

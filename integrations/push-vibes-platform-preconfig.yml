@@ -1,0 +1,55 @@
+arazzo: 1.0.1
+info:
+  title: 'push through vibes-platform: createBroadcast preconfigured with push'
+  summary: Calls vibes-platform's createBroadcast with `push` preset, the way push is used inside vibes-platform.
+  description: 'A PRECONFIGURATION, not an orchestration: push is a rail inside vibes-platform, so the integration
+    is vibes-platform''s own operation with push''s enum value set. Derived from vibes-platform''s contract (vibes-platform-broadcasts-api-openapi.yml);
+    required properties are inputs.'
+  version: 1.0.0
+x-integration:
+  partner: vibes-platform
+  relationship: rail
+  preconfig: true
+  edge_evidence: https://github.com/api-evangelist/vibes-platform/blob/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+  edge_type: contract
+  preset:
+    message_type: push
+  method: derived
+  generated: '2026-10-12'
+  generator: build-integration-preconfigs.py
+sourceDescriptions:
+- name: vibesPlatformBroadcastsApiOpenapi
+  url: https://raw.githubusercontent.com/api-evangelist/vibes-platform/refs/heads/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: push-via-vibes-platform-createbroadcast
+  summary: createBroadcast with push preset
+  inputs:
+    type: object
+    required:
+    - name
+    - message_text
+    - subscription_list_id
+    properties:
+      name:
+        type: string
+      message_text:
+        type: string
+      subscription_list_id:
+        type: string
+  steps:
+  - stepId: call-with-preset
+    operationId: $sourceDescriptions.vibesPlatformBroadcastsApiOpenapi.createBroadcast
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.name
+        message_text: $inputs.message_text
+        subscription_list_id: $inputs.subscription_list_id
+        message_type: push
+    successCriteria:
+    - condition: $statusCode == 201
+    outputs:
+      id: $response.body#/id
+  outputs:
+    id: $steps.call-with-preset.outputs.id

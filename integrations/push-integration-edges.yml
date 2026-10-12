@@ -1,0 +1,46 @@
+generated: '2026-10-12'
+method: searched
+source:
+- https://zapier.com/apps/push/integrations
+- https://n8n.io/integrations/push/
+- https://composio.dev/toolkits/push
+- https://monid.ai/tools/push
+checked:
+- https://composio.dev/toolkits/push
+- https://monid.ai/tools/push
+- https://n8n.io/integrations/push/
+- https://zapier.com/apps/push/integrations
+summary: null
+marketplace_apps: []
+edges:
+- partner_name: adobe-campaign
+  partner: adobe-campaign
+  partner_match: domain
+  type: contract
+  channel: partner-built
+  relationship: rail
+  direction: partner-built
+  evidence: https://github.com/api-evangelist/adobe-campaign/blob/main/openapi/adobe-campaign-profileandservices-api-openapi.yml
+  contract_reference:
+    repo: adobe-campaign
+    spec_file: adobe-campaign-profileandservices-api-openapi.yml
+    value: push
+    property: schemas.ServiceCreate.messageType
+    detected_by: detect-payment-method-edges.py
+    detected: '2026-10-12'
+- partner_name: vibes-platform
+  partner: vibes-platform
+  partner_match: domain
+  type: contract
+  channel: partner-built
+  relationship: rail
+  direction: partner-built
+  evidence: https://github.com/api-evangelist/vibes-platform/blob/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+  contract_reference:
+    repo: vibes-platform
+    spec_file: vibes-platform-broadcasts-api-openapi.yml
+    value: push
+    property: Broadcast.message_type
+    detected_by: detect-payment-method-edges.py
+    detected: '2026-10-12'
+templates: []

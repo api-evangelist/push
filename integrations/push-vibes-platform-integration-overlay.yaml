@@ -1,0 +1,30 @@
+# DERIVED by build-integration-preconfigs.py (roadmap#949). Overlay on the PARTNER's contract:
+# where vibes-platform's enum names push, and what that value is.
+overlay: 1.0.0
+info:
+  title: push as a rail in vibes-platform's contract
+  version: 1.0.0
+extends: https://raw.githubusercontent.com/api-evangelist/vibes-platform/refs/heads/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+actions:
+- target: $.components.schemas.Broadcast.properties.message_type
+  update:
+    x-apievangelist-integration:
+      values:
+        push:
+          provider: push
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vibes-platform/blob/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.components.schemas.BroadcastCreate.properties.message_type
+  update:
+    x-apievangelist-integration:
+      values:
+        push:
+          provider: push
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vibes-platform/blob/main/openapi/vibes-platform-broadcasts-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py

@@ -64,48 +64,154 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Push (PUSHTech) is a hospitality CRM and customer data platform for hotels, now operating as
-**Cendyn CRM** following its acquisition by Cendyn. It unifies the guest database and orchestrates
-pre-stay, during-stay and post-stay communication across email, SMS and web/app push.
+Push (PUSHTech, now operating as Cendyn CRM after its acquisition by Cendyn) is a CRM and customer data platform specialised in hospitality — the guest journey for hotels — with additional use in retail, ecommerce and marketplace. The platform unifies the guest database and orchestrates pre-stay, during-stay and post-stay communication across email, SMS and web/app push. Its token-authenticated REST API exposes 67 operations across 15 resources (contacts and contact custom fields, companies, products, purchases, coupon lists, hotel data, audience lists, campaigns, deliveries, account balance and a bulk sync-data ingest) from two independent data centers, api.eu.cendyncrm.com and api.us.cendyncrm.com. An HMAC-signed webhook surface publishes five event groups — activities, deliveries, contacts, bulk contacts and incoming SMS — and a first-party JavaScript Web SDK handles browser tracking and web push. The developer portal moved from developers.pushtech.com to developers.cendyncrm.com without a redirect; the old hostnames no longer resolve. Cendyn CRM publishes no OpenAPI, no AsyncAPI, no MCP server, no agent card and no /.well-known/ documents; the machine-readable artifacts in this repo are derived by API Evangelist from the provider's own published HTML reference.
 
-Backed by: 500-global — https://pushtech.com
+**Areas:** Company · CRM · Customer Data Platform · Marketing Automation · Hospitality · Hotels · Guest Experience · Email · SMS · Push Notifications · Webhook · Segmentation
 
-## The API surface
+## Push on APIs.io
 
-- **REST API** — 67 operations across 15 resources, token-authenticated, served from two
-  independent data centers (`api.eu.cendyncrm.com`, `api.us.cendyncrm.com`). An account lives in
-  exactly one; the base URLs are not interchangeable.
-- **Webhooks** — five event groups (activities, deliveries, contacts, bulk contacts, incoming
-  SMS), HMAC-SHA256 signed.
-- **Web SDK** — a first-party JavaScript library for browser tracking and web push, distributed
-  by `<script>` tag from a vendor CDN.
+Everything profiled for Push is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/push/](https://apis.io/providers/push/)** — or go straight to one of the APIs or properties below.
 
-Reference: <https://developers.cendyncrm.com/api/reference>
+### APIs (15)
 
-## What is NOT published by Cendyn CRM
+- [Push Account API](https://apis.io/apis/push/push-account-api/) — The Account API from Push — 1 operation(s) for account.
+- [Push Audience List API](https://apis.io/apis/push/push-audience-list-api/) — The Audience List API from Push — 2 operation(s) for audience list.
+- [Push Campaigns API](https://apis.io/apis/push/push-campaigns-api/) — The Campaigns API from Push — 3 operation(s) for campaigns.
+- [Push Company API](https://apis.io/apis/push/push-company-api/) — The Company API from Push — 2 operation(s) for company.
+- [Push Company custom fields API](https://apis.io/apis/push/push-company-custom-fields-api/) — The Company custom fields API from Push — 2 operation(s) for company custom fields.
+- [Push Contact API](https://apis.io/apis/push/push-contact-api/) — The Contact API from Push — 5 operation(s) for contact.
+- [Push Contact Custom fields API](https://apis.io/apis/push/push-contact-custom-fields-api/) — The Contact Custom fields API from Push — 2 operation(s) for contact custom fields.
+- [Push Coupon lists API](https://apis.io/apis/push/push-coupon-lists-api/) — The Coupon lists API from Push — 3 operation(s) for coupon lists.
+- [Push Deliveries API](https://apis.io/apis/push/push-deliveries-api/) — The Deliveries API from Push — 5 operation(s) for deliveries.
+- [Push Hotel Data API](https://apis.io/apis/push/push-hotel-data-api/) — The Hotel Data API from Push — 4 operation(s) for hotel data.
+- [Push Hotel Data custom fields API](https://apis.io/apis/push/push-hotel-data-custom-fields-api/) — The Hotel Data custom fields API from Push — 2 operation(s) for hotel data custom fields.
+- [Push Product API](https://apis.io/apis/push/push-product-api/) — The Product API from Push — 2 operation(s) for product.
+- [Push Product custom fields API](https://apis.io/apis/push/push-product-custom-fields-api/) — The Product custom fields API from Push — 2 operation(s) for product custom fields.
+- [Push Purchase API](https://apis.io/apis/push/push-purchase-api/) — The Purchase API from Push — 4 operation(s) for purchase.
+- [Push Sync Data API](https://apis.io/apis/push/push-sync-data-api/) — The Sync Data API from Push — 2 operation(s) for sync data.
 
-Recorded so absence reads as deliberate rather than as something this profile failed to find.
-Every item below was probed on 2026-08-13 and missed:
+### Published properties
 
-- **No OpenAPI.** The reference is server-rendered HTML (Apitome / rspec_api_documentation).
-  `openapi/push-cendyn-crm-openapi.yml` in this repo is **derived by API Evangelist** from that
-  reference — every path, method, parameter, description and example is copied from it, and the
-  document carries an `info.x-provenance` block saying so. It is not a Cendyn artifact.
-- **No AsyncAPI.** `asyncapi/push-webhooks-asyncapi.yml` is likewise derived from the published
-  webhook reference and carries the same provenance stamp.
-- **No MCP server** (`/mcp` 404s on every host), **no A2A agent card**, and **no `/.well-known/`
-  document of any kind**. No `a2a/` artifact is written and no `MCPServer`, `AgentCard`,
-  `WellKnown` or `SecurityTxt` pointer is emitted — see `x-pointers-deliberately-absent` in
-  `apis.yml`.
-- **No idempotency contract**, **no pagination**, and **no published rate limits or rate-limit
-  response headers** on any of the 67 operations.
-- **No status page, no changelog, no SLA, no deprecation policy, no public pricing.**
-- **No server-side SDK** in any language. The only client library is the browser Web SDK, whose
-  newest build is 2.9.0, last modified 2024-06-26.
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## A lifecycle note
+#### Arazzo workflows (2)
 
-The developer portal moved from `developers.pushtech.com` to `developers.cendyncrm.com` **without
-a redirect** — the old hostnames simply stopped resolving, so every inbound link and integration
-doc pointing at them is dead. The only breadcrumb to the new location is the API host's own 404
-body. The portal's own sign-in link, pointing at `www.cendyncrm.com`, is itself broken.
+Multi-step workflows that chain operations into a business task.
+
+- [Load a product catalog and attach guest purchase history](https://apis.io/arazzos/push/push-load-catalog-and-purchase-history/)
+- [Onboard a guest and send a welcome message](https://apis.io/arazzos/push/push-onboard-and-welcome-guest/)
+
+#### AsyncAPI (2)
+
+Event-driven and webhook contracts.
+
+- [Push Webhooks](https://apis.io/asyncapis/push/push-webhooks/)
+- [Cendyn CRM (PUSHTech) Webhooks](https://apis.io/asyncapis/push/push-webhooks-asyncapi/)
+
+#### Event channels (5)
+
+Individual events and webhooks the provider emits.
+
+- [/](https://apis.io/channels/push/activities/)
+- [/](https://apis.io/channels/push/bulkcontacts/)
+- [/](https://apis.io/channels/push/contacts/)
+- [/](https://apis.io/channels/push/deliveries/)
+- [/](https://apis.io/channels/push/incomingsms/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Push Agentic Access](https://apis.io/agentic-access/push/push-agentic-access/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Push Cendyn Crm Overlay](https://apis.io/overlays/push/push-cendyn-crm-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Push Authentication](https://apis.io/security/push/push-authentication/)
+- [Push Domain Security](https://apis.io/security/push/push-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Push Plans Pricing](https://apis.io/plans/push/push-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Push Rate Limits](https://apis.io/rate-limits/push/push-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://pushtech.com)
+- [Documentation](https://developers.cendyncrm.com/api)
+- [Getting started](https://developers.cendyncrm.com/api/authentication)
+- [API reference](https://developers.cendyncrm.com/api/reference)
+- [Support](https://pushtech.com/contact)
+- [Blog](https://www.cendyn.com/resources/)
+- [Terms of service](https://pushtech.com/terms)
+- [Privacy policy](https://pushtech.com/privacy_policy)
+- [GitHub](https://github.com/pushtech)
+
+## API Evangelist rating
+
+**Kin Score 32.1** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 21.8 |
+| Contract governance | 4.5 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 27.6 |
+
+**Agent readiness 30.8** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 20.8** — Telecommunications
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/push/](https://apis.io/providers/push/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Push: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/push/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
